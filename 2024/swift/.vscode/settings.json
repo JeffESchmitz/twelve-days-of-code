@@ -1,0 +1,9 @@
+{
+  "swift.buildArguments": [],
+  "swift.testEnvironmentVariables": {},
+  "swift.diagnosticsCollection": "keepSourceKit",
+  "swift.autoGenerateLaunchConfigurations": true,
+  "testing.automaticallyOpenPeekView": "never",
+  "testing.openTesting": "neverOpen",
+  "testing.automaticallyOpenTestResults": "neverOpen"
+}

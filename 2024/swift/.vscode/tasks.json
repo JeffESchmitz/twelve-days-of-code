@@ -1,0 +1,74 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "swift: Build Debug AdventOfCode",
+            "type": "swift",
+            "args": [
+                "build",
+                "--build-tests"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "swift: Build Release AdventOfCode",
+            "type": "swift",
+            "args": [
+                "build",
+                "--configuration",
+                "release"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "swift: Test All",
+            "type": "swift",
+            "args": [
+                "test"
+            ],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "swift: Run AdventOfCode",
+            "type": "shell",
+            "command": "swift",
+            "args": [
+                "run",
+                "AdventOfCode"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Specific Day",
+            "type": "shell",
+            "command": "./run",
+            "args": [
+                "${input:dayNumber}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Test Specific Day",
+            "type": "shell",
+            "command": "./test",
+            "args": [
+                "${input:dayNumber}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "dayNumber",
+            "type": "promptString",
+            "description": "Enter day number (1-25):",
+            "default": "1"
+        }
+    ]
+}

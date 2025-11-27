@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:adventofcode.com)",
+      "Bash(./input.sh:*)",
+      "Bash(./test:*)",
+      "Bash(./run:*)",
+      "Bash(gh api:*)",
+      "Bash(swift package show-dependencies:*)",
+      "Bash(swift package clean:*)",
+      "Bash(swift package:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git config:*)",
+      "Bash(swift -e:*)",
+      "Bash(gh pr create --title \"Day 18: RAM Run - BFS Pathfinding & Binary Search\" --body \"$(cat <<''EOF''\n## Summary\n\nImplemented complete solution for Day 18: RAM Run with both Part 1 and Part 2.\n\n**Part 1**: Find shortest path through corrupted memory grid using BFS\n- Grid: 71×71 (0-70 coordinates)\n- Obstacle: 1024 corrupted memory coordinates\n- Answer: **250 steps**\n- Performance: ~6ms\n\n**Part 2**: Find first byte that blocks all paths using binary search\n- Leverages monotonic property: once path blocked, stays blocked\n- Binary search: O(log n) iterations × O(grid²) BFS = 280x faster than linear search\n- Answer: **56,8**\n- Performance: ~13ms (vs 17 seconds with linear approach!)\n\n## Implementation Details\n\n### Data Structures\n- `Set<Point>` for corrupted locations (O(1) membership test)\n- `Deque<(Point, Int)>` for BFS queue (O(1) append/popFirst)\n- `Set<Point>` for visited tracking (O(1) lookups)\n\n### Algorithms\n- **Part 1**: Breadth-First Search for shortest path on unweighted grid\n- **Part 2**: Binary search to find monotonic boundary condition\n\n### Code Quality\n- Removed code duplication from tests\n- Made algorithms configurable for both example and real input\n- All tests passing (example + solution for both parts)\n\n### Documentation\n- Created comprehensive Day18-learnings.md with algorithm analysis\n- Updated main AoC-2024-Learnings.md with Day 18 patterns\n- Documented why binary search is 280x faster\n\n## Test Results\n\n```\n✔ Day 18 Part 1 Example: 22 steps\n✔ Day 18 Part 1 Solution: 250 steps\n✔ Day 18 Part 2 Example: 6,1 (correct!)\n✔ Day 18 Part 2 Solution: 56,8\n```\n\n## Key Learnings\n\n1. **Monotonic properties enable binary search** - Essential optimization technique\n2. **Clean Part 1 code enables efficient Part 2** - Configurable algorithms matter\n3. **Data structure selection is critical** - Set vs Array = 280x speedup\n4. **Problem decomposition reveals hidden patterns** - Break down the problem to find the best algorithm\n\nAutomated by Claude Code\nEOF\n)\",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git branch:*)",
+      "Bash(code .)",
+      "WebFetch(domain:github.com)",
+      "Bash(swift build:*)",
+      "Bash(swift test:*)",
+      "Bash(swift run:*)",
+      "Bash(cat:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git stash:*)",
+      "Bash(git reset:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
