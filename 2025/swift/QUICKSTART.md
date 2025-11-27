@@ -13,7 +13,6 @@
 - Updated `README.md` references
 
 ### 3. **New Files Created** ✅
-- `SETUP.md` - Complete setup guide for both platforms
 - `new_day.sh` - Script to generate day templates
 - `.swiftly.env` - Swift version lock file
 
@@ -70,9 +69,8 @@ swift test --filter Day05Tests
 TwelveDaysOfCode/
 ├── Package.swift              # Swift package definition
 ├── README.md                  # Main documentation
-├── SETUP.md                   # Platform setup guide
-├── .swiftly.env              # Swift version lock
-├── new_day.sh                # Template generator script
+├── .swiftly.env               # Swift version lock
+├── new_day.sh                 # Template generator script
 │
 ├── Sources/
 │   ├── TDOC.swift            # Main entry point
