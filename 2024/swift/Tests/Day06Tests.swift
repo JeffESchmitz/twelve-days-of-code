@@ -1,0 +1,46 @@
+//
+// Advent of Code 2024 Day 6 Tests
+//
+
+import Testing
+@testable import AdventOfCode
+
+fileprivate let testInput = """
+....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...
+"""
+
+@Suite("Day 6 Tests")
+struct Day06Tests {
+    @MainActor @Test("Day 6 Part 1")
+    func testDay06_part1() async {
+        let day = Day06(input: testInput)
+        #expect(await day.part1() == 41)
+    }
+
+    @MainActor @Test("Day 6 Part 1 Solution")
+    func testDay06_part1_solution() async {
+        let day = Day06(input: Day06.input)
+        #expect(await day.part1() == 5269)
+    }
+
+    @MainActor @Test("Day 6 Part 2")
+    func testDay06_part2() async {
+        let day = Day06(input: testInput)
+        #expect(await day.part2() == 6)
+    }
+
+    @MainActor @Test("Day 6 Part 2 Solution")
+    func testDay06_part2_solution() async {
+        let day = Day06(input: Day06.input)
+        #expect(await day.part2() == 1957)
+    }
+}
