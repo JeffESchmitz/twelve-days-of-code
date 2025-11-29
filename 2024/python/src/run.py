@@ -1,14 +1,12 @@
-from __future__ import annotations
-
 import argparse
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Dict, Tuple
 
 import day01
 
 
 # Registry of available days. Extend this as more ports are added.
-PARTS: Dict[int, Tuple[Callable[[str], int], Callable[[str], int]]] = {
+PARTS: dict[int, tuple[Callable[[str], int], Callable[[str], int]]] = {
     1: (day01.part1, day01.part2),
 }
 
