@@ -38,4 +38,4 @@ cat <<END
 """#
 }
 END
-) >Sources/Inputs/Day$D2+Input.swift
+) >Sources/Day$D2+Input.swift
