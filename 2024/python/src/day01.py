@@ -1,14 +1,11 @@
-from __future__ import annotations
-
 from collections import Counter
 from pathlib import Path
-from typing import Iterable, Tuple, List
 
 
-def parse(input_str: str) -> Tuple[List[int], List[int]]:
+def parse(input_str: str) -> tuple[list[int], list[int]]:
     """Parse two-column input into left/right integer lists."""
-    left: List[int] = []
-    right: List[int] = []
+    left: list[int] = []
+    right: list[int] = []
     for line in input_str.strip().splitlines():
         if not line.strip():
             continue
