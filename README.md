@@ -4,6 +4,7 @@ Multi-year solutions for Twelve Days of Code (formerly Advent of Code), kept in 
 
 ## What's here
 - `2024/swift`: Full Swift package (ex-AoC2024) with solutions, tests, and detailed learnings.
+- `2025/swift`: Prepared starter kit for the upcoming season (templates, scripts, and day stubs).
 - Placeholders for future `kotlin/` and `python/` tracks under each year.
 
 ## Quick start
