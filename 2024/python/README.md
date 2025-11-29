@@ -14,6 +14,9 @@ pip install -r requirements.txt
 ```bash
 python src/day01.py                 # uses inputs/day01.txt
 python src/day01.py --input path/to/input.txt
+
+# Multi-day runner (registry-based; currently Day 1)
+python -m run --day 1
 ```
 
 ## Testing
@@ -27,5 +30,6 @@ pytest -k day01
 2024/python/
 ├── inputs/day01.txt      # puzzle input (copied from Swift track)
 ├── src/day01.py          # implementation
+├── src/run.py            # simple multi-day runner (extend registry as you port more)
 └── tests/test_day01.py   # pytest coverage (sample + full input)
 ```
