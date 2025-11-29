@@ -1,0 +1,8 @@
+{
+    "python.defaultInterpreterPath": "/Users/Z004S1K/Desktop/GitHub/JeffESchmitz/twelve-days-of-code/2024/python/.venv/bin/python",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
