@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 ## Running
 ```bash
-python src/day01.py                 # uses inputs/day01.txt
+python src/day01.py                 # uses inputs/day01.txt (if you add it)
 python src/day01.py --input path/to/input.txt
 
 # Multi-day runner (registry-based; currently Day 1)
@@ -24,6 +24,8 @@ python -m run --day 1
 pytest
 pytest -k day01
 ```
+
+Note: Solution tests are skipped unless you provide your own `inputs/day01.txt` (per AoC rules).
 
 ## Layout
 ```
