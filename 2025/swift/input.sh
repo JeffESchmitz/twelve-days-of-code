@@ -1,6 +1,7 @@
 #!/bin/sh
 
-YR={YEAR}
+# Allow overriding year via AOC_YEAR, default to current calendar year.
+YR=${AOC_YEAR:-$(date +%Y)}
 DAY=$1
 
 if [ -z "$DAY" ]; then
@@ -16,7 +17,7 @@ if [ -z "$AOC_SESSION" ]; then
     exit 1
 fi
 
-echo "getting puzzle input for day $DAY"
+echo "getting puzzle input for $YR day $DAY"
 
 D2=$(printf "%02d" $DAY)
 
@@ -30,7 +31,7 @@ extension Day$D2 {
 static let input = #"""
 END
 
-UA="https://codeberg.org/gereon/aoc{YEAR}"
+UA="https://codeberg.org/gereon/aoc$YR"
 curl -s https://adventofcode.com/$YR/day/$DAY/input --cookie "session=$AOC_SESSION" -H "User-Agent: $UA"
 
 cat <<END
