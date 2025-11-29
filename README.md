@@ -1,34 +1,99 @@
-# Twelve Days of Code
+# 🎄 Twelve Days of Code
 
-Multi-year solutions for Twelve Days of Code (formerly Advent of Code), kept in `YYYY/<language>/`.
+> *A multi-year, multi-language journey through festive coding challenges — learning, solving, and celebrating the art of problem-solving.*
 
-## What's here
-- `2024/swift`: Full Swift package (ex-AoC2024) with solutions, tests, and detailed learnings.
-- `2024/python`: Python port starting with Day 1 (pytest + CLI runner).
-- `2025/swift`: Prepared starter kit for the upcoming season (templates, scripts, and day stubs).
-- Placeholders for future `kotlin/` and `python/` tracks under each year.
+---
 
-## Quick start
+## 🎁 What's Inside
+
+This repository contains solutions for **Twelve Days of Code** (formerly Advent of Code), organized by year and language. Each solution is crafted not just to solve puzzles, but to **learn deeply** — understanding patterns, algorithms, and the "why" behind every approach.
+
+```
+📂 2024/
+   ├── 🦅 swift/     23/25 days complete (46⭐)
+   └── 🐍 python/    Day 1 ported (learning track)
+📂 2025/
+   └── 🦅 swift/     Starter kit ready for December
+```
+
+### Languages & Progress
+- **Swift**: Primary language — full solutions with detailed learnings
+- **Python**: Secondary track — porting select days to learn Python idioms
+- **Future**: Kotlin and additional languages planned
+
+---
+
+## 🚀 Quick Start
+
+### Swift (2024)
 ```bash
-# Swift (2024)
 cd 2024/swift
 swift test          # run all tests
 ./run 22            # run a single day
 ./run all           # run everything
 ```
-See the per-language README for additional commands or editor tooling (`2024/swift/README.md`).
 
-## Learning resources
-- `2024/swift/AoC-2024-Learnings.md`: 8-step problem breakdown, algorithm patterns, and performance notes.
-- Day-by-day deep dives under `2024/swift/Sources/DayXX/*-learnings.md` for specific puzzles.
+### Python (2024)
+```bash
+cd 2024/python
+./test 1            # test day 1
+./run 1             # run day 1 solution
+```
 
-## Patterns we emphasize
-- Choose the right tool: BFS/DFS for grids, binary search for “first X that…”, memoization for “count all ways”.
-- Data structures matter: prefer `Set`/`Deque` over linear scans when complexity matters.
-- Three-phase flow: precompute expensive pieces, optimize selection, then scale with caching.
+See language-specific READMEs for setup details and additional commands.
 
-## Progress
-- 2024 Swift: 23/25 days solved (46/50 stars) — see `2024/swift/README.md` for story and highlights.
+---
 
-## History
-- Repository renamed from `advent-of-code` to reflect the new event name; old links redirect.
+## 🧠 Learning Approach
+
+This isn't just about getting stars ⭐ — it's about **mastering problem-solving patterns**.
+
+With the help of **Claude Code** and AI pair programming:
+- 🔍 **Deep Understanding**: Break down each problem into fundamental components
+- 📊 **Pattern Recognition**: Identify when to use BFS, binary search, memoization, etc.
+- ⚡ **Performance Analysis**: Understand time/space complexity and optimization opportunities
+- 📝 **Documentation**: Capture insights for future reference
+
+Each day includes:
+- Clean, tested solutions
+- Algorithm pattern identification
+- Performance notes and trade-offs
+- Detailed learnings documentation (see `2024/swift/AoC-2024-Learnings.md`)
+
+---
+
+## 🎯 Core Patterns We've Mastered
+
+**Algorithm Selection**
+- Shortest path problems → **BFS/Dijkstra**
+- "First X that..." → **Binary search**
+- "Count all ways" → **Dynamic programming + memoization**
+- Grid traversal → **BFS/DFS/Flood fill**
+
+**Data Structure Wisdom**
+- `Set.contains()` O(1) vs `Array.contains()` O(n) = **1000x difference**
+- `Deque.popFirst()` O(1) vs `Array.removeFirst()` O(n)
+- Dictionary-based memoization for scaling to massive inputs
+
+**Three-Phase Architecture**
+1. **Precompute**: Do expensive work once
+2. **Optimize**: Select the best approach
+3. **Scale**: Use caching/memoization for massive inputs
+
+---
+
+## 📚 Learning Resources
+
+- **[2024 Swift Deep Dive](2024/swift/README.md)**: The journey, breakthroughs, and "aha!" moments
+- **[8-Step Problem Framework](2024/swift/AoC-2024-Learnings.md)**: Systematic approach to solving any problem
+- **Day-Specific Learnings**: See `2024/swift/Sources/DayXX/*-learnings.md` for individual deep dives
+
+---
+
+## 🎅 Contributing
+
+This is a personal learning repository, but feel free to explore, learn from, or fork for your own journey!
+
+---
+
+*Built with Swift, Python, and the power of AI-assisted learning. Not just solving puzzles — building mastery.*
