@@ -48,7 +48,8 @@ See language-specific READMEs for setup details and additional commands.
 
 This isn't just about getting stars ⭐ — it's about **mastering problem-solving patterns**.
 
-With the help of **Claude Code** and AI pair programming:
+With the help of **Claude Code** and specialized AI agents:
+- 🤖 **Agent Architecture**: Purpose-built agents (Explore, Plan, Task) systematically break down problems, search codebases, and plan implementations
 - 🔍 **Deep Understanding**: Break down each problem into fundamental components
 - 📊 **Pattern Recognition**: Identify when to use BFS, binary search, memoization, etc.
 - ⚡ **Performance Analysis**: Understand time/space complexity and optimization opportunities
