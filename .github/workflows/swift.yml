@@ -1,16 +1,22 @@
+# DISABLED: Waiting for GitHub Actions to support Xcode 16.2+ / Swift 6.2
+# Our Swift projects require Swift 6.0+ and dependencies (AoCTools) require Swift 6.2
+# GitHub Actions currently only supports up to Xcode 16.1
+# Re-enable this workflow when Xcode 16.2+ is available on macos-15 runners
+
 name: Swift
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - '*/swift/**'
-      - '.github/workflows/swift.yml'
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - '*/swift/**'
-      - '.github/workflows/swift.yml'
+  workflow_dispatch:  # Manual trigger only for now
+  # push:
+  #   branches: [ "main" ]
+  #   paths:
+  #     - '*/swift/**'
+  #     - '.github/workflows/swift.yml'
+  # pull_request:
+  #   branches: [ "main" ]
+  #   paths:
+  #     - '*/swift/**'
+  #     - '.github/workflows/swift.yml'
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_16.1.app/Contents/Developer
