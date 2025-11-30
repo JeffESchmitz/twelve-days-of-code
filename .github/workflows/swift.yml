@@ -20,7 +20,9 @@ jobs:
     runs-on: macos-15
     strategy:
       matrix:
-        year: ["2024", "2025"]
+        year: ["2024"]
+        # 2025 disabled until Xcode 16.2+ available on GitHub Actions
+        # year: ["2024", "2025"]
 
     steps:
     - uses: actions/checkout@v4
