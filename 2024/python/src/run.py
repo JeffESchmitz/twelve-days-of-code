@@ -3,11 +3,13 @@ from collections.abc import Callable
 from pathlib import Path
 
 import day01
+import day02
 
 
 # Registry of available days. Extend this as more ports are added.
 PARTS: dict[int, tuple[Callable[[str], int], Callable[[str], int]]] = {
     1: (day01.part1, day01.part2),
+    2: (day02.part1, day02.part2),
 }
 
 
