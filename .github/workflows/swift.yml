@@ -1,0 +1,52 @@
+# NOTE: 2025 Swift disabled - waiting for GitHub Actions to support Xcode 16.2+ / Swift 6.2
+# 2025 dependencies (AoCTools 0.1.9+) require Swift 6.2, which needs Xcode 16.2+
+# GitHub Actions currently only supports up to Xcode 16.1
+
+name: Swift
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '*/swift/**'
+      - '.github/workflows/swift.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - '*/swift/**'
+      - '.github/workflows/swift.yml'
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_16.1.app/Contents/Developer
+
+jobs:
+  build:
+    runs-on: macos-15
+    strategy:
+      matrix:
+        year: ["2024"]
+        # 2025 disabled until Xcode 16.2+ available on GitHub Actions
+        # year: ["2024", "2025"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/cache@v4
+      with:
+        path: ${{ matrix.year }}/swift/.build
+        key: ${{ runner.os }}-${{ matrix.year }}-spm-${{ hashFiles(format('{0}/swift/**/Package.resolved', matrix.year)) }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.year }}-spm-
+
+    - name: Build
+      working-directory: ${{ matrix.year }}/swift
+      run: swift build
+
+    - name: Test
+      working-directory: ${{ matrix.year }}/swift
+      run: |
+        if [ "${{ matrix.year }}" == "2024" ]; then
+          swift test --filter "AoCTests.Day.*Tests/testDay.*_part[12]\(\)"
+        else
+          swift test --filter "TDOCTests.Day.*Tests/testDay.*_part[12]\(\)"
+        fi
