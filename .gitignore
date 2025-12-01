@@ -1,3 +1,33 @@
+# macOS
+.DS_Store
+
+# AoC Session Cookie and Input Files
+# Per AoC rules, puzzle inputs are copyrighted and should not be shared publicly
+.aoc-session
+*+Input.swift
+*-input.txt
+*/inputs/
+
+# Swift / Xcode
+xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+Packages/
+Package.resolved
+*.xcodeproj
+.swiftpm
+.build/
+*.xcworkspace
+Carthage/Build/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
