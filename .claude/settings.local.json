@@ -34,7 +34,11 @@
       "Bash(swift package:*)",
       "Bash(./run.sh:*)",
       "Bash(git merge-base:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
