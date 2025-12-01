@@ -1,3 +1,29 @@
+# macOS
+.DS_Store
+
+# AoC Session Cookie
+.aoc-session
+
+# Swift / Xcode
+xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+Packages/
+Package.resolved
+*.xcodeproj
+.swiftpm
+.build/
+*.xcworkspace
+Carthage/Build/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
