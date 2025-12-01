@@ -20,7 +20,10 @@
       "Bash(xargs:*)",
       "Bash(gh run watch:*)",
       "Bash(gh pr checks:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:adventofcode.com)",
+      "Bash(cp:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
