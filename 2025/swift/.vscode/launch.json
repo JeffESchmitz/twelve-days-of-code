@@ -1,23 +1,21 @@
 {
     "configurations": [
         {
-            "type": "swift",
+            "type": "lldb",
             "request": "launch",
-            "args": [],
-            "cwd": "${workspaceFolder:swift}",
             "name": "Debug TwelveDaysOfCode",
-            "target": "TwelveDaysOfCode",
-            "configuration": "debug",
+            "program": "${workspaceFolder}/.build/debug/TwelveDaysOfCode",
+            "args": [],
+            "cwd": "${workspaceFolder}",
             "preLaunchTask": "swift: Build Debug TwelveDaysOfCode"
         },
         {
-            "type": "swift",
+            "type": "lldb",
             "request": "launch",
-            "args": [],
-            "cwd": "${workspaceFolder:swift}",
             "name": "Release TwelveDaysOfCode",
-            "target": "TwelveDaysOfCode",
-            "configuration": "release",
+            "program": "${workspaceFolder}/.build/release/TwelveDaysOfCode",
+            "args": [],
+            "cwd": "${workspaceFolder}",
             "preLaunchTask": "swift: Build Release TwelveDaysOfCode"
         }
     ]

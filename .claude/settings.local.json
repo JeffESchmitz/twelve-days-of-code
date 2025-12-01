@@ -6,7 +6,21 @@
       "Bash(.venv/bin/pip install:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(.venv/bin/pytest tests/ -v)",
+      "Bash(chmod:*)",
+      "Bash(./test:*)",
+      "Bash(cd:*)",
+      "Bash(./run:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh pr view:*)",
+      "Bash(gh run list:*)",
+      "Bash(xargs:*)",
+      "Bash(gh run watch:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
