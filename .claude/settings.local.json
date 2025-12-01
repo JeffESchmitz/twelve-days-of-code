@@ -32,7 +32,9 @@
       "Bash(pkill:*)",
       "Bash(killall:*)",
       "Bash(swift package:*)",
-      "Bash(./run.sh:*)"
+      "Bash(./run.sh:*)",
+      "Bash(git merge-base:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []
