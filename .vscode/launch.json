@@ -19,6 +19,26 @@
             "target": "AdventOfCode",
             "configuration": "release",
             "preLaunchTask": "swift: Build Release AdventOfCode (2024/swift)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:twelve-days-of-code}/2025/swift",
+            "name": "Debug TwelveDaysOfCode (2025/swift)",
+            "target": "TwelveDaysOfCode",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug TwelveDaysOfCode (2025/swift)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:twelve-days-of-code}/2025/swift",
+            "name": "Release TwelveDaysOfCode (2025/swift)",
+            "target": "TwelveDaysOfCode",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release TwelveDaysOfCode (2025/swift)"
         }
     ]
 }
