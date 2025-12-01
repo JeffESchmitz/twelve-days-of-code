@@ -25,7 +25,20 @@
       "Bash(cp:*)",
       "Bash(git restore:*)",
       "Bash(git check-ignore:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(./test.sh:*)",
+      "Bash(swift test:*)",
+      "Bash(swift build:*)",
+      "Bash(pkill:*)",
+      "Bash(killall:*)",
+      "Bash(swift package:*)",
+      "Bash(./run.sh:*)",
+      "Bash(git merge-base:*)",
+      "Bash(git merge:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
