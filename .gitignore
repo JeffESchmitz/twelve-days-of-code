@@ -6,6 +6,7 @@
 .aoc-session
 *+Input.swift
 *-input.txt
+*/inputs/
 
 # Swift / Xcode
 xcuserdata/
