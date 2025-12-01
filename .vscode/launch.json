@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:twelve-days-of-code}/2024/swift",
+            "name": "Debug AdventOfCode (2024/swift)",
+            "target": "AdventOfCode",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug AdventOfCode (2024/swift)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:twelve-days-of-code}/2024/swift",
+            "name": "Release AdventOfCode (2024/swift)",
+            "target": "AdventOfCode",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release AdventOfCode (2024/swift)"
+        }
+    ]
+}
