@@ -5,11 +5,12 @@
 > Building on the framework and learnings from AoC 2024
 
 **Last Updated**: December 1, 2025
-**Progress**: Days 1-12 (0 solved so far)
+**Progress**: Days 1-12 (1 solved so far)
 
 ---
 
 ## Table of Contents
+
 - [Quick Reference: Days 1-12](#quick-reference-days-1-12)
 - [Development Environment](#development-environment)
 - [Common Patterns & Algorithms](#common-patterns--algorithms)
@@ -25,7 +26,7 @@
 
 | Day | Title | Key Technique | Complexity |
 |-----|-------|---------------|------------|
-| 1 | Secret Entrance | TBD | ⭐ TBD |
+| 1 | Secret Entrance | Simulation + Modular Arithmetic | ⭐ Easy |
 | 2 | TBD | TBD | ⭐ TBD |
 | 3 | TBD | TBD | ⭐ TBD |
 | 4 | TBD | TBD | ⭐ TBD |
@@ -45,23 +46,27 @@
 ### VSCode Setup
 
 **What We Have:**
+
 - Complete Swift development environment in VSCode
 - Debug configurations with breakpoints
 - Fast testing workflow (`./test <day>` for incremental compilation)
 - Testing UI vs command-line trade-offs
 
 **Key Files:**
+
 - `.vscode/launch.json` - Debug configurations
 - `.vscode/tasks.json` - Build and test tasks
 - `.vscode/settings.json` - Swift extension config
 - `.vscode/USAGE.md` - Complete usage guide
 
 **Testing Performance:**
+
 - **VSCode Testing UI (beaker)**: Slower (full rebuild) but convenient for exploration
 - **Command-line `./test <day>`**: Fast (incremental compilation) - use for iteration
 - **Recommendation**: Use `./test` for rapid development, beaker for test discovery
 
 **Debugging:**
+
 - Set breakpoints: Click line number gutter
 - `F5` to start debugging
 - `F10` (step over), `F11` (step into), `Shift+F11` (step out)
@@ -82,9 +87,11 @@
 ### Search Algorithms
 
 #### Breadth-First Search (BFS)
+
 **When to use**: Finding shortest paths, exploring level-by-level, finding minimum values
 
 **Template**:
+
 ```swift
 import Collections
 
@@ -103,6 +110,7 @@ while let current = queue.popFirst() {
 **Why Deque?** O(1) `popFirst()` vs Array's O(n)
 
 #### Pattern: Working Backwards
+
 When output depends on input consumption (like dividing by 8), work backwards:
 1. Start with values that produce the final output
 2. Extend by trying all possible inputs that could lead there
@@ -111,6 +119,7 @@ When output depends on input consumption (like dividing by 8), work backwards:
 ### Virtual Machine Implementation
 
 **Pattern**:
+
 ```swift
 struct Computer {
     var registers: [String: Int]
@@ -128,6 +137,7 @@ struct Computer {
 ```
 
 **Key Lessons**:
+
 - Check bounds for both opcode AND operand
 - Handle jumps carefully (don't double-increment)
 - Use `mutating func` for state changes
@@ -136,6 +146,7 @@ struct Computer {
 ### Parsing Patterns
 
 **Swift Parsing Library** (Point-Free):
+
 ```swift
 struct Parser: Parser {
     var body: some Parser<Substring, Output> {
@@ -157,6 +168,7 @@ struct Parser: Parser {
 ### Collections Package
 
 **Deque** - Essential for efficient queues
+
 ```swift
 import Collections
 
@@ -170,12 +182,14 @@ let first = queue.popFirst()  // O(1) - Array is O(n)!
 ### Functional Patterns
 
 **zip + reduce**:
+
 ```swift
 // Compare two sorted lists
 zip(left, right).reduce(0) { $0 + abs($1.0 - $1.1) }
 ```
 
 **enumerated + filter + map**:
+
 ```swift
 // Remove element at specific index
 array.enumerated()
@@ -184,6 +198,7 @@ array.enumerated()
 ```
 
 **allSatisfy**:
+
 ```swift
 differences.allSatisfy { abs($0) >= 1 && abs($0) <= 3 }
 ```
@@ -191,6 +206,7 @@ differences.allSatisfy { abs($0) >= 1 && abs($0) <= 3 }
 ### Bit Manipulation
 
 **Building values bit-by-bit**:
+
 ```swift
 let candidateA = (currentA << 3) | bits  // Prepend 3 bits
 ```
@@ -550,11 +566,83 @@ func part2() async -> Int {
 
 ### Day 1: Secret Entrance
 
-**The Challenge**: TBD
+**The Challenge**: Track a circular dial (positions 0-99) starting at 50. Follow rotation instructions (L/R with distance) and count how many times the dial lands on position 0.
 
-**Key Insights**: TBD
+**Key Insights**:
 
-**Performance**: TBD
+1. **Algorithm Pattern: Simulation**
+   - Follow instructions sequentially
+   - Track state (position) through each step
+   - Count occurrences of target condition (position == 0)
+
+2. **Wraparound Mechanics**
+   - Circular dial means position wraps: 0 ↔ 99
+   - Two implementation approaches:
+     - **If-statements** (chosen): Readable, debuggable
+       ```swift
+       if position < 0 { position += 100 }
+       else if position > 99 { position -= 100 }
+       ```
+     - **Modulo formula**: Mathematically elegant but harder to reason about
+       ```swift
+       position = ((position % 100) + 100) % 100
+       ```
+
+3. **Data Structure Choice**
+   - `struct Rotation { let direction: Character; let distance: Int }`
+   - Simple, clear, and type-safe
+   - Alternative considered: Tuple with named arguments (less clear)
+
+4. **Parsing Strategy**
+   - Used simple Swift string operations: `split(separator:)` + `compactMap`
+   - Could use swift-parsing, but overkill for simple format
+   - **Key**: `compactMap` filters out empty lines automatically
+
+5. **Edge Cases**
+   - Empty input → return 0
+   - Large rotations (e.g., L500) → arithmetic handles correctly, no loops needed
+   - Starting position (50) is never 0, so no initial count
+
+**Implementation Highlights**:
+
+```swift
+// Simple, readable simulation loop
+var position = 50
+var count = 0
+
+for rotation in rotations {
+    // Apply movement
+    if rotation.direction == "L" {
+        position -= rotation.distance
+    } else {
+        position += rotation.distance
+    }
+
+    // Handle wraparound
+    if position < 0 {
+        position += 100
+    } else if position > 99 {
+        position -= 100
+    }
+
+    // Check if we landed on zero
+    if position == 0 {
+        count += 1
+    }
+}
+```
+
+**Learning Mode Experience**:
+
+Used Puzzle Teacher approach (Socratic method) to discover the solution through guided questioning:
+- Traced example manually to understand mechanics
+- Discovered wraparound behavior by working through calculations
+- Chose if-statement approach for readability over modulo formula
+- Built understanding of simulation as the right algorithm pattern
+
+**Performance**: O(n) where n is number of rotation instructions. Fast and straightforward.
+
+**Answer (Part 1)**: 519
 
 ---
 
@@ -696,5 +784,5 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Days completed: 0 / 12*
-*Ready for: Day 1! 🎄*
+*Days completed: 1 / 12*
+*Next up: Day 2! 🎄*
