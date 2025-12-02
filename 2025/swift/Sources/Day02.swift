@@ -81,14 +81,10 @@ final class Day02: AdventOfCodeDay {
     }
 
     func part1() async -> Int {
-        var totalSum = 0
-        for range in ranges {
-            for productID in range.start...range.end where isExactlyTwoCopies(productID) {
-                totalSum += productID
-            }
-        }
-
-        return totalSum
+        ranges
+            .flatMap { $0.start...$0.end }
+            .filter(isExactlyTwoCopies)
+            .sum()
     }
 
     /// Check if a number is a pattern repeated at least twice
@@ -109,14 +105,13 @@ final class Day02: AdventOfCodeDay {
             // Pattern length must evenly divide total digits
             guard totalDigits % patternLength == 0 else { continue }
 
-            let repeatCount = totalDigits / patternLength  // How many times pattern repeats
+            let repeatCount = totalDigits / patternLength
             guard repeatCount >= 2 else { continue }
 
             let divisor = POW10[patternLength]
-            let pattern = number % divisor  // Extract last k digits as potential pattern
+            let pattern = number % divisor
 
             // Verify pattern has correct number of digits (no leading zeros)
-            // Example: For pattern length 2, pattern must be >= 10
             if patternLength > 1 && pattern < POW10[patternLength - 1] {
                 continue  // Pattern would have leading zeros
             }
@@ -136,13 +131,9 @@ final class Day02: AdventOfCodeDay {
     }
 
     func part2() async -> Int {
-        var totalSum = 0
-        for range in ranges {
-            for productID in range.start...range.end where isRepeatedAtLeastTwice(productID) {
-                totalSum += productID
-            }
-        }
-
-        return totalSum
+        ranges
+            .flatMap { $0.start...$0.end }
+            .filter(isRepeatedAtLeastTwice)
+            .sum()
     }
 }
