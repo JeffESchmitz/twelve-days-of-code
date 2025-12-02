@@ -53,9 +53,87 @@ for instruction in instructions {
 
 ---
 
-## Day 02: TBD
+## Day 02: Gift Shop
 
-...
+**Puzzle**: Pattern detection in product IDs (repeated digit sequences)
+**Solutions**: Part 1: 24043483400, Part 2: 38262920235
+
+### Key Concepts
+
+**Arithmetic Pattern Detection (No String Conversion)**
+```swift
+// Extract last k digits
+let pattern = number % POW10[k]
+
+// Extract first k digits
+let upperHalf = number / POW10[k]
+
+// Reconstruct by repeating
+reconstructed = reconstructed * divisor + pattern
+```
+
+**Performance Optimization**
+- Precompute powers of 10: `POW10[i]` for O(1) lookup
+- Avoid string conversion for digit manipulation
+
+**Leading Zero Detection**
+```swift
+// Pattern must have correct digit count
+guard pattern >= POW10[patternLength - 1] else { continue }
+```
+
+### Pattern: Performance-Aware Functional Programming
+
+**When Functional Wins** ✅:
+```swift
+// Top-level pipeline (12% FASTER than nested loops!)
+ranges
+    .flatMap { $0.start...$0.end }
+    .filter(isExactlyTwoCopies)
+    .sum()
+```
+
+**When Functional Loses** ❌:
+```swift
+// Hot-path inner loop (24% slower with .reduce())
+// Use manual loop instead:
+var reconstructed = 0
+for _ in 0..<repeatCount {
+    reconstructed = reconstructed * divisor + pattern
+}
+```
+
+**Never Use .lazy in Hot Paths** ⚠️:
+- `.lazy` was 25x SLOWER (1567ms vs 63ms)
+- Closure overhead on every element access
+- Only use for infinite sequences or massive datasets
+
+### Refactoring Lessons
+
+**Scientific Method**:
+1. Establish baseline (62.8ms)
+2. One change at a time
+3. Benchmark after each step
+4. Revert if >20% regression
+
+**Outcome**:
+- ✅ part1/part2: Functional (12% faster)
+- ❌ isRepeatedAtLeastTwice: Reverted to manual loops (21% faster)
+
+**Rule of Thumb**:
+- Outer loops with large data → Functional
+- Inner loops called millions of times → Manual
+
+### Swift Techniques
+
+- Precomputation with lazy globals
+- Range flattening: `.flatMap { $0.start...$0.end }`
+- AoCTools `.sum()` for clean pipelines
+- Guard-heavy validation pattern
+
+**Related patterns**: Digit manipulation, pattern detection, performance profiling
+
+**Detail**: See `Sources/Day02-learnings.md`
 
 ---
 
@@ -75,10 +153,11 @@ for instruction in instructions {
 - [ ] Backtracking
 - [ ] Binary Search
 - [ ] Graph Theory
+- [x] Pattern Detection
 
 ### Data Structures Used
 - [x] Structs
-- [ ] Arrays/Sequences
+- [x] Arrays/Sequences
 - [ ] Sets
 - [ ] Dictionaries
 - [ ] Queues/Stacks
@@ -89,9 +168,11 @@ for instruction in instructions {
 - [x] Parsing with split/compactMap
 - [ ] Swift Parsing library
 - [ ] Pattern matching
-- [ ] Sequence protocols
+- [x] Sequence protocols (flatMap/filter)
 - [ ] Collections library
-- [ ] Async/await
+- [x] Async/await
+- [x] Lazy globals for precomputation
+- [x] Performance profiling
 
 ---
 
@@ -116,7 +197,32 @@ value = ((value % max) + max) % max
 items.reduce(into: [:]) { $0[$1, default: 0] += 1 }
 ```
 
+**Digit extraction (arithmetic)**:
+```swift
+let lastKDigits = number % POW10[k]
+let firstKDigits = number / POW10[k]
+```
+
+**Precompute expensive calculations**:
+```swift
+private let POW10: [Int] = {
+    var powers = [Int](repeating: 1, count: 19)
+    for i in 1..<powers.count {
+        powers[i] = powers[i - 1] * 10
+    }
+    return powers
+}()
+```
+
+**Functional pipeline**:
+```swift
+items
+    .flatMap { ... }
+    .filter { ... }
+    .sum()  // from AoCTools
+```
+
 ---
 
 **Challenge Period**: December 1-12, 2025
-**Completion Status**: 1/12 days complete ⭐⭐
+**Completion Status**: 2/12 days complete ⭐⭐⭐⭐
