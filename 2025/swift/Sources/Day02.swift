@@ -10,6 +10,27 @@
 
 import AoCTools
 
+// Precompute powers of 10 (10^0 through 10^18)
+private let POW10: [Int] = {
+    var powers = [Int](repeating: 1, count: 19)
+    for i in 1..<powers.count {
+        powers[i] = powers[i - 1] * 10
+    }
+    return powers
+}()
+
+/// Count the number of decimal digits in a positive integer
+/// Example: digitsCount(123) = 3, digitsCount(7) = 1
+private func digitsCount(_ number: Int) -> Int {
+    var remaining = number
+    var count = 0
+    repeat {
+        count += 1
+        remaining /= 10
+    } while remaining > 0
+    return count
+}
+
 struct IDRange {
     let start: Int
     let end: Int
@@ -40,20 +61,23 @@ final class Day02: AdventOfCodeDay {
 
     /// Check if a number is exactly a pattern repeated twice
     /// Examples: 11 (1+1), 6464 (64+64), 123123 (123+123)
-    /// Algorithm: Split string in half and compare the two halves
+    /// Algorithm: Uses pure arithmetic - no string conversion
+    ///            If n = XX (two copies), then n = pattern × 10^k + pattern
+    ///            where k is the number of digits in the pattern
+    /// Example: 6464 = 64 × 100 + 64
     func isExactlyTwoCopies(_ number: Int) -> Bool {
-        let numberString = String(number)
-        let digitCount = numberString.count
+        let totalDigits = digitsCount(number)
 
         // Must have even length (at least 2 digits)
-        guard digitCount >= 2, digitCount % 2 == 0 else { return false }
+        guard totalDigits >= 2, totalDigits % 2 == 0 else { return false }
 
-        // Split at midpoint
-        let midIndex = numberString.index(numberString.startIndex, offsetBy: digitCount / 2)
-        let firstHalf = numberString[numberString.startIndex..<midIndex]
-        let secondHalf = numberString[midIndex..<numberString.endIndex]
+        let patternLength = totalDigits / 2
+        let divisor = POW10[patternLength]
 
-        return firstHalf == secondHalf
+        let upperHalf = number / divisor  // Extract upper pattern
+        let lowerHalf = number % divisor  // Extract lower pattern
+
+        return upperHalf == lowerHalf
     }
 
     func part1() async -> Int {
@@ -69,25 +93,46 @@ final class Day02: AdventOfCodeDay {
 
     /// Check if a number is a pattern repeated at least twice
     /// Examples: 1212 (12 twice), 111 (1 three times), 123123123 (123 three times)
-    /// Algorithm: If string S is a repeated pattern, S will appear inside (S+S)[1..<end-1]
-    /// Why this works: (ABC+ABC)[1..<5] = "BCAB" contains "ABC" if ABC is NOT repeated
-    ///                 (AB+AB)[1..<3] = "BAB" contains "AB" ✓ (AB is repeated!)
+    /// Algorithm: Uses pure arithmetic - no string conversion
+    ///            Try all possible pattern lengths that evenly divide total digits
+    ///            For each length k, extract the last k digits as the pattern
+    ///            Reconstruct by repeating the pattern m times
+    ///            Check if reconstruction matches original number
     func isRepeatedAtLeastTwice(_ number: Int) -> Bool {
-        let numberString = String(number)
+        let totalDigits = digitsCount(number)
 
         // Need at least 2 digits to form a pattern
-        guard numberString.count > 1 else { return false }
+        guard totalDigits > 1 else { return false }
 
-        // Classic string rotation trick: concatenate string with itself
-        let doubled = numberString + numberString
+        // Try all possible pattern lengths (from 1 digit up to half the total)
+        for patternLength in 1...(totalDigits / 2) {
+            // Pattern length must evenly divide total digits
+            guard totalDigits % patternLength == 0 else { continue }
 
-        // Remove first and last character
-        let startIndex = doubled.index(after: doubled.startIndex)
-        let endIndex = doubled.index(before: doubled.endIndex)
-        let innerSubstring = doubled[startIndex..<endIndex]
+            let repeatCount = totalDigits / patternLength  // How many times pattern repeats
+            guard repeatCount >= 2 else { continue }
 
-        // If original string appears in the middle, it's a repeated pattern
-        return innerSubstring.contains(numberString)
+            let divisor = POW10[patternLength]
+            let pattern = number % divisor  // Extract last k digits as potential pattern
+
+            // Verify pattern has correct number of digits (no leading zeros)
+            // Example: For pattern length 2, pattern must be >= 10
+            if patternLength > 1 && pattern < POW10[patternLength - 1] {
+                continue  // Pattern would have leading zeros
+            }
+
+            // Reconstruct number by repeating pattern
+            var reconstructed = 0
+            for _ in 0..<repeatCount {
+                reconstructed = reconstructed * divisor + pattern
+            }
+
+            if reconstructed == number {
+                return true
+            }
+        }
+
+        return false
     }
 
     func part2() async -> Int {
