@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 1, 2025
-**Progress**: Days 1-12 (1 solved so far)
+**Last Updated**: December 3, 2025
+**Progress**: Days 1-12 (2 solved so far, 4 stars)
 
 ---
 
@@ -26,8 +26,8 @@
 
 | Day | Title | Key Technique | Complexity |
 |-----|-------|---------------|------------|
-| 1 | Secret Entrance | Simulation + Modular Arithmetic | ⭐ Easy |
-| 2 | TBD | TBD | ⭐ TBD |
+| 1 | Secret Entrance | Simulation + Modular Arithmetic | ⭐⭐ Easy |
+| 2 | Gift Shop | Arithmetic Pattern Detection + Performance Profiling | ⭐⭐ Medium |
 | 3 | TBD | TBD | ⭐ TBD |
 | 4 | TBD | TBD | ⭐ TBD |
 | 5 | TBD | TBD | ⭐ TBD |
@@ -642,7 +642,105 @@ Used Puzzle Teacher approach (Socratic method) to discover the solution through 
 
 **Performance**: O(n) where n is number of rotation instructions. Fast and straightforward.
 
-**Answer (Part 1)**: 519
+**Answers**:
+- Part 1: 1145
+- Part 2: 6561
+
+---
+
+### Day 2: Gift Shop
+
+**The Challenge**: Analyze product IDs to find patterns where digits repeat in sequence (e.g., 123123 has "123" repeated twice). Count products with exactly 2 repetitions, then find sum of IDs with at least 2 repetitions.
+
+**Key Insights**:
+
+1. **Arithmetic Pattern Detection (No String Conversion)**
+   ```swift
+   // Extract last k digits
+   let pattern = number % POW10[k]
+
+   // Extract first k digits
+   let upperHalf = number / POW10[k]
+
+   // Reconstruct by repeating
+   var reconstructed = 0
+   for _ in 0..<repeatCount {
+       reconstructed = reconstructed * divisor + pattern
+   }
+   ```
+
+2. **Performance Optimization with Precomputation**
+   ```swift
+   private let POW10: [Int] = {
+       var powers = [Int](repeating: 1, count: 19)
+       for i in 1..<powers.count {
+           powers[i] = powers[i - 1] * 10
+       }
+       return powers
+   }()
+   ```
+   - O(1) lookup instead of repeated `pow()` calls
+   - Computed once at program start
+
+3. **Leading Zero Detection**
+   ```swift
+   // Pattern must have correct digit count
+   guard pattern >= POW10[patternLength - 1] else { continue }
+   ```
+   - Prevents false matches like "01" being treated as "1"
+
+4. **Performance-Aware Functional Programming**
+
+   **When Functional Wins** ✅:
+   ```swift
+   // Top-level pipeline (12% FASTER than nested loops!)
+   ranges
+       .flatMap { $0.start...$0.end }
+       .filter(isExactlyTwoCopies)
+       .sum()
+   ```
+
+   **When Functional Loses** ❌:
+   ```swift
+   // Hot-path inner loop (24% slower with .reduce())
+   // Use manual loop instead:
+   var reconstructed = 0
+   for _ in 0..<repeatCount {
+       reconstructed = reconstructed * divisor + pattern
+   }
+   ```
+
+5. **The .lazy Performance Trap** ⚠️
+   - `.lazy` was 25x SLOWER (1567ms vs 63ms)
+   - Closure overhead on every element access
+   - Only use for infinite sequences or massive datasets
+   - **Never use in hot paths**
+
+**Refactoring Lessons - Scientific Method**:
+1. Establish baseline (62.8ms)
+2. One change at a time
+3. Benchmark after each step
+4. Revert if >20% regression
+
+**Outcome**:
+- ✅ part1/part2: Functional (12% faster)
+- ❌ isRepeatedAtLeastTwice inner loop: Reverted to manual (21% faster)
+
+**Rule of Thumb**:
+- Outer loops with large data → Functional
+- Inner loops called millions of times → Manual
+
+**Swift Techniques**:
+- Precomputation with lazy globals
+- Range flattening: `.flatMap { $0.start...$0.end }`
+- AoCTools `.sum()` for clean pipelines
+- Guard-heavy validation pattern
+
+**Related patterns**: Digit manipulation, pattern detection, performance profiling
+
+**Answers**:
+- Part 1: 24043483400
+- Part 2: 38262920235
 
 ---
 
@@ -784,5 +882,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Days completed: 1 / 12*
-*Next up: Day 2! 🎄*
+*Last updated: December 3, 2025*
+*Days completed: 2 / 12 (4 stars)*
+*Next up: Day 3! 🎄*

@@ -99,7 +99,7 @@ Each day includes:
 - **Day-Specific Learnings**: See `2024/swift/Sources/DayXX/*-learnings.md` for individual deep dives
 
 ### 2025 In Progress
-- **[2025 Learning Tracker](2025/swift/TDOC-2025-Learnings.md)**: Quick reference for patterns and concepts
+- **[2025 Learning Tracker](2025/swift/TwelveDaysOfCode-2025-Learnings.md)**: Comprehensive guide with patterns, frameworks, and Day 1-2 deep dives
 - **Day-Specific Learnings**: See `2025/swift/Sources/DayXX-learnings.md` for detailed walkthroughs
 
 ---
