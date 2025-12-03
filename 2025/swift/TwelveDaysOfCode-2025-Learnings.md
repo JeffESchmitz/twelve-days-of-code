@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 1, 2025
-**Progress**: Days 1-12 (1 solved so far)
+**Last Updated**: December 3, 2025
+**Progress**: Days 1-12 (3 solved so far, 6 stars)
 
 ---
 
@@ -26,9 +26,9 @@
 
 | Day | Title | Key Technique | Complexity |
 |-----|-------|---------------|------------|
-| 1 | Secret Entrance | Simulation + Modular Arithmetic | ⭐ Easy |
-| 2 | TBD | TBD | ⭐ TBD |
-| 3 | TBD | TBD | ⭐ TBD |
+| 1 | Secret Entrance | Simulation + Modular Arithmetic | ⭐⭐ Easy |
+| 2 | Gift Shop | Arithmetic Pattern Detection + Performance Profiling | ⭐⭐ Medium |
+| 3 | Lobby | Greedy Optimization + Monotonic Stack | ⭐⭐ Medium |
 | 4 | TBD | TBD | ⭐ TBD |
 | 5 | TBD | TBD | ⭐ TBD |
 | 6 | TBD | TBD | ⭐ TBD |
@@ -642,7 +642,210 @@ Used Puzzle Teacher approach (Socratic method) to discover the solution through 
 
 **Performance**: O(n) where n is number of rotation instructions. Fast and straightforward.
 
-**Answer (Part 1)**: 519
+**Answers**:
+- Part 1: 1145
+- Part 2: 6561
+
+---
+
+### Day 2: Gift Shop
+
+**The Challenge**: Analyze product IDs to find patterns where digits repeat in sequence (e.g., 123123 has "123" repeated twice). Count products with exactly 2 repetitions, then find sum of IDs with at least 2 repetitions.
+
+**Key Insights**:
+
+1. **Arithmetic Pattern Detection (No String Conversion)**
+   ```swift
+   // Extract last k digits
+   let pattern = number % POW10[k]
+
+   // Extract first k digits
+   let upperHalf = number / POW10[k]
+
+   // Reconstruct by repeating
+   var reconstructed = 0
+   for _ in 0..<repeatCount {
+       reconstructed = reconstructed * divisor + pattern
+   }
+   ```
+
+2. **Performance Optimization with Precomputation**
+   ```swift
+   private let POW10: [Int] = {
+       var powers = [Int](repeating: 1, count: 19)
+       for i in 1..<powers.count {
+           powers[i] = powers[i - 1] * 10
+       }
+       return powers
+   }()
+   ```
+   - O(1) lookup instead of repeated `pow()` calls
+   - Computed once at program start
+
+3. **Leading Zero Detection**
+   ```swift
+   // Pattern must have correct digit count
+   guard pattern >= POW10[patternLength - 1] else { continue }
+   ```
+   - Prevents false matches like "01" being treated as "1"
+
+4. **Performance-Aware Functional Programming**
+
+   **When Functional Wins** ✅:
+   ```swift
+   // Top-level pipeline (12% FASTER than nested loops!)
+   ranges
+       .flatMap { $0.start...$0.end }
+       .filter(isExactlyTwoCopies)
+       .sum()
+   ```
+
+   **When Functional Loses** ❌:
+   ```swift
+   // Hot-path inner loop (24% slower with .reduce())
+   // Use manual loop instead:
+   var reconstructed = 0
+   for _ in 0..<repeatCount {
+       reconstructed = reconstructed * divisor + pattern
+   }
+   ```
+
+5. **The .lazy Performance Trap** ⚠️
+   - `.lazy` was 25x SLOWER (1567ms vs 63ms)
+   - Closure overhead on every element access
+   - Only use for infinite sequences or massive datasets
+   - **Never use in hot paths**
+
+**Refactoring Lessons - Scientific Method**:
+1. Establish baseline (62.8ms)
+2. One change at a time
+3. Benchmark after each step
+4. Revert if >20% regression
+
+**Outcome**:
+- ✅ part1/part2: Functional (12% faster)
+- ❌ isRepeatedAtLeastTwice inner loop: Reverted to manual (21% faster)
+
+**Rule of Thumb**:
+- Outer loops with large data → Functional
+- Inner loops called millions of times → Manual
+
+**Swift Techniques**:
+- Precomputation with lazy globals
+- Range flattening: `.flatMap { $0.start...$0.end }`
+- AoCTools `.sum()` for clean pipelines
+- Guard-heavy validation pattern
+
+**Related patterns**: Digit manipulation, pattern detection, performance profiling
+
+**Answers**:
+- Part 1: 24043483400
+- Part 2: 38262920235
+
+---
+
+### Day 3: Lobby
+
+**The Challenge**: Select batteries from banks to maximize joltage output. Part 1 selects 2 batteries to form a 2-digit number. Part 2 selects 12 batteries to form a 12-digit number. Must preserve positional order ("in order" constraint).
+
+**Key Insights**:
+
+1. **Positional Constraint Changes Algorithm**
+   - "In order" means: If picking position `i` first, can only pick position `j` where `j > i`
+   - Cannot rearrange digits - order must be preserved
+   - This constraint fundamentally determines which algorithm to use
+
+2. **Part 1: Suffix Maximum Optimization**
+   ```swift
+   // One-pass backwards scan with temporary variable
+   var maxJoltage = 0
+   var maxSoFar = bank[bank.count - 1]  // Start with rightmost
+
+   for i in stride(from: bank.count - 2, through: 0, by: -1) {
+       let joltage = bank[i] * 10 + maxSoFar
+       maxJoltage = max(maxJoltage, joltage)
+       maxSoFar = max(maxSoFar, bank[i])
+   }
+   ```
+   - **Complexity**: O(n) time, O(1) space
+   - **Strategy**: For each position as tens digit, pair with max from remaining positions
+   - **Optimization**: Single backwards pass maintains running maximum
+
+3. **Part 2: Monotonic Stack (Greedy Selection)**
+   ```swift
+   var skip = n - keep  // Remove (n-12) smallest digits
+   var stack: [Int] = []
+
+   for digit in bank {
+       // Greedily remove smaller digits from stack
+       while !stack.isEmpty && skip > 0 && stack.last! < digit {
+           stack.removeLast()
+           skip -= 1
+       }
+       stack.append(digit)
+   }
+
+   // Remove remaining skips from end
+   while skip > 0 {
+       stack.removeLast()
+       skip -= 1
+   }
+   ```
+   - **Complexity**: O(n) time, O(k) space where k=12
+   - **Pattern**: Classic "Remove K Digits" problem
+   - **Strategy**: Build result by keeping larger digits, removing smaller ones strategically
+
+4. **Algorithm Selection by Problem Type**
+   - **Part 1**: "Pick 2, maximize pairing" → Suffix maximum
+   - **Part 2**: "Pick 12, remove smallest" → Monotonic stack
+   - Same problem domain, different k value requires different algorithm!
+
+5. **Swift stride() for Backwards Iteration**
+   ```swift
+   stride(from: count - 2, through: 0, by: -1)  // Includes 0
+   stride(from: count - 2, to: -1, by: -1)      // Equivalent
+
+   // Alternative:
+   (0...count - 2).reversed()
+   ```
+
+6. **Socratic Method for Problem Discovery**
+   - Started with questions about constraints
+   - Discovered "in order" rule through examples
+   - Identified optimization opportunities before coding
+   - Led to optimal algorithm choice for each part
+
+**Performance**:
+- Part 1: 1.3ms (O(n) per bank, 197 banks)
+- Part 2: 8.0ms (O(n) per bank with stack operations)
+- Total: 9.3ms ⚡
+
+**Complexity Analysis**:
+- **Naive Part 1**: O(n²) - try all pairs
+- **Optimized Part 1**: O(n) - suffix maximum precomputation
+- **Part 2**: O(n) - single pass with stack (amortized)
+
+**Swift Techniques**:
+- `stride(from:through:by:)` for backwards iteration
+- `.compactMap { $0.wholeNumberValue }` for digit parsing
+- `.reduce(0) { $0 * 10 + $1 }` for integer reconstruction
+- Guard clauses for edge cases (banks with < k batteries)
+
+**Related Patterns**:
+- Greedy algorithms
+- Monotonic stack/queue
+- Suffix array optimizations
+- "Remove K Elements" variants
+
+**Learning Framework Applied**:
+- 8-Step Problem Breakdown (GOAL, WORLD, CONSTRAINTS, etc.)
+- Socratic questioning to discover constraints
+- Algorithm selection based on problem structure
+- One-pass optimization considerations
+
+**Answers**:
+- Part 1: 17613
+- Part 2: 175304218462560
 
 ---
 
@@ -784,5 +987,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Days completed: 1 / 12*
-*Next up: Day 2! 🎄*
+*Last updated: December 3, 2025*
+*Days completed: 2 / 12 (4 stars)*
+*Next up: Day 3! 🎄*

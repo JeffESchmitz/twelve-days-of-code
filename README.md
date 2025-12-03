@@ -13,7 +13,7 @@ This repository contains solutions for **Twelve Days of Code** (formerly Advent 
    ├── 🦅 swift/     23/25 days complete (46⭐)
    └── 🐍 python/    Day 1 ported (learning track)
 📂 2025/
-   └── 🦅 swift/     2/12 days complete (4⭐) — In progress!
+   └── 🦅 swift/     3/12 days complete (6⭐) — In progress!
 ```
 
 ### Languages & Progress
@@ -99,7 +99,7 @@ Each day includes:
 - **Day-Specific Learnings**: See `2024/swift/Sources/DayXX/*-learnings.md` for individual deep dives
 
 ### 2025 In Progress
-- **[2025 Learning Tracker](2025/swift/TDOC-2025-Learnings.md)**: Quick reference for patterns and concepts
+- **[2025 Learning Tracker](2025/swift/TwelveDaysOfCode-2025-Learnings.md)**: Comprehensive guide with patterns, frameworks, and Day 1-2 deep dives
 - **Day-Specific Learnings**: See `2025/swift/Sources/DayXX-learnings.md` for detailed walkthroughs
 
 ---
