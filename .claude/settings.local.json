@@ -40,7 +40,10 @@
       "Bash(git pull:*)",
       "Bash(git stash:*)",
       "Bash(swift run:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Run $i:\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
