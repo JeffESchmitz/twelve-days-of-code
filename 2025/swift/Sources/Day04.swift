@@ -10,10 +10,21 @@ import AoCTools
 final class Day04: AdventOfCodeDay, @unchecked Sendable {
     let title = "Printing Department"
     let grid: Grid<Character>
+    let rollPositions: Set<Point>
+
+    // Optimization 1: Inline neighbor offsets to avoid allocations
+    private static let neighborOffsets: [(Int, Int)] = [
+        (-1, -1), (-1, 0), (-1, 1),  // NW, N, NE
+        (0, -1),           (0, 1),    // W,     E
+        (1, -1),  (1, 0),  (1, 1)     // SW, S, SE
+    ]
 
     init(input: String) {
         // Parse input into Grid<Character>
         self.grid = Grid.parse(input.split(separator: "\n").map(String.init))
+
+        // Optimization 2: Pre-compute roll positions once
+        self.rollPositions = Set(grid.points.filter { $0.value == "@" }.keys)
     }
 
     func part1() async -> Int {
@@ -24,12 +35,13 @@ final class Day04: AdventOfCodeDay, @unchecked Sendable {
             // Skip if not a paper roll
             guard character == "@" else { continue }
 
-            // Get all 8 neighbors
-            let neighborPoints = point.neighbors(adjacency: .all)
-
-            // Count neighbors that are also paper rolls
-            let neighborRollCount = neighborPoints.count { neighborPoint in
-                grid.points[neighborPoint] == "@"
+            // Count neighbors directly (avoid array allocation)
+            var neighborRollCount = 0
+            for (dx, dy) in Self.neighborOffsets {
+                let neighbor = Point(point.x + dx, point.y + dy)
+                if rollPositions.contains(neighbor) {
+                    neighborRollCount += 1
+                }
             }
 
             // Check if accessible (fewer than 4 neighbors)
@@ -43,15 +55,18 @@ final class Day04: AdventOfCodeDay, @unchecked Sendable {
 
     func part2() async -> Int {
         // Part 2: Iterative removal simulation
-        var remainingRolls = Set(grid.points.filter { $0.value == "@" }.keys)
+        var remainingRolls = rollPositions
         var totalRemoved = 0
 
         while true {
             // Find all accessible rolls in current state
             let accessible = remainingRolls.filter { point in
-                let neighborPoints = point.neighbors(adjacency: .all)
-                let neighborRollCount = neighborPoints.count { neighborPoint in
-                    remainingRolls.contains(neighborPoint)
+                var neighborRollCount = 0
+                for (dx, dy) in Self.neighborOffsets {
+                    let neighbor = Point(point.x + dx, point.y + dy)
+                    if remainingRolls.contains(neighbor) {
+                        neighborRollCount += 1
+                    }
                 }
                 return neighborRollCount < 4
             }
