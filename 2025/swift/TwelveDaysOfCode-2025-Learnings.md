@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 3, 2025
-**Progress**: Days 1-12 (3 solved so far, 6 stars)
+**Last Updated**: December 4, 2025
+**Progress**: Days 1-12 (4 solved so far, 8 stars)
 
 ---
 
@@ -29,7 +29,7 @@
 | 1 | Secret Entrance | Simulation + Modular Arithmetic | ⭐⭐ Easy |
 | 2 | Gift Shop | Arithmetic Pattern Detection + Performance Profiling | ⭐⭐ Medium |
 | 3 | Lobby | Greedy Optimization + Monotonic Stack | ⭐⭐ Medium |
-| 4 | TBD | TBD | ⭐ TBD |
+| 4 | Printing Department | Neighbor-Counting Grid + Iterative Simulation | ⭐⭐ Medium |
 | 5 | TBD | TBD | ⭐ TBD |
 | 6 | TBD | TBD | ⭐ TBD |
 | 7 | TBD | TBD | ⭐ TBD |
@@ -846,6 +846,153 @@ Used Puzzle Teacher approach (Socratic method) to discover the solution through 
 **Answers**:
 - Part 1: 17613
 - Part 2: 175304218462560
+
+---
+
+### Day 4: Printing Department
+
+**The Challenge**: Count accessible paper rolls in a grid (Part 1), then simulate iterative removal where removing rolls changes neighbor counts and makes more rolls accessible (Part 2).
+
+**Key Insights**:
+
+1. **Neighbor-Counting Grid Pattern (New Fundamental Pattern!)**
+   - **Problem Type**: Given a 2D grid, for each cell, count neighbors meeting criteria
+   - **Common in AoC**: Cellular automata, flood fill, minesweeper logic, spatial analysis
+   - **This Problem**: Count `@` cells with < 4 neighboring `@` cells (out of 8 possible)
+
+2. **AoCTools Grid<Character> Usage**
+   ```swift
+   // Parse grid from input
+   let grid = Grid.parse(input.split(separator: "\n").map(String.init))
+
+   // Iterate all points
+   for (point, character) in grid.points {
+       guard character == "@" else { continue }
+
+       // Get all 8 neighbors (N, NE, E, SE, S, SW, W, NW)
+       let neighborPoints = point.neighbors(adjacency: .all)
+
+       // Count neighbors matching criteria
+       let count = neighborPoints.count { neighborPoint in
+           grid.points[neighborPoint] == "@"  // nil-safe lookup
+       }
+   }
+   ```
+
+   **Why AoCTools is Perfect Here**:
+   - `Grid.parse()` handles 2D string parsing automatically
+   - `point.neighbors(adjacency:)` returns all 8 directions
+   - `grid.points[point]` returns `Character?` - handles out-of-bounds gracefully
+   - No manual edge/corner detection needed!
+
+3. **Part 1: Simple Neighbor Count** (O(n) where n = grid cells)
+   ```swift
+   func part1() -> Int {
+       var accessibleCount = 0
+       for (point, character) in grid.points {
+           guard character == "@" else { continue }
+           let neighbors = point.neighbors(adjacency: .all)
+           let rollCount = neighbors.count { grid.points[$0] == "@" }
+           if rollCount < 4 {
+               accessibleCount += 1
+           }
+       }
+       return accessibleCount
+   }
+   ```
+
+4. **Part 2: Iterative Removal Simulation** (O(n × rounds))
+   - **Key Insight**: Removing rolls changes neighbor counts for remaining rolls
+   - **Pattern**: Cascading/iterative simulation until stable state
+
+   ```swift
+   func part2() -> Int {
+       // Track remaining rolls as Set for O(1) lookups
+       var remainingRolls = Set(grid.points.filter { $0.value == "@" }.keys)
+       var totalRemoved = 0
+
+       while true {
+           // Find accessible in CURRENT state
+           let accessible = remainingRolls.filter { point in
+               let neighbors = point.neighbors(adjacency: .all)
+               let count = neighbors.count { remainingRolls.contains($0) }
+               return count < 4
+           }
+
+           // No more accessible? Done!
+           guard !accessible.isEmpty else { break }
+
+           // Remove all accessible rolls this round
+           for point in accessible {
+               remainingRolls.remove(point)
+           }
+
+           totalRemoved += accessible.count
+       }
+
+       return totalRemoved
+   }
+   ```
+
+5. **Set-Based State Management**
+   - Use `Set<Point>` instead of modifying grid directly
+   - O(1) for `.contains()` checks during neighbor counting
+   - Efficient removal with `.remove()`
+   - Cleaner than mutating the original grid structure
+
+6. **Simulation Pattern Recognition**
+   - **When to use**: "Keep doing X until no more changes"
+   - **Examples**: Conway's Game of Life, flood fill, cellular automata
+   - **Structure**: Initialize state → Loop: find changes → apply changes → repeat until stable
+
+**Performance**:
+- Part 1: 32ms (single pass through grid)
+- Part 2: 440ms (iterative simulation, multiple passes)
+- Grid size: 140 rows × 140 columns = 19,600 cells
+
+**Complexity Analysis**:
+- **Part 1**: O(n) where n = grid cells
+  - Single iteration through all points
+  - Each point: O(8) neighbor checks
+  - Total: O(8n) = O(n)
+
+- **Part 2**: O(n × rounds)
+  - Each round: O(n) to find accessible + O(accessible) to remove
+  - Number of rounds depends on grid structure
+  - Worst case: O(n²) if removing 1 roll per round
+  - Actual: O(n × log n) for typical cascading removal
+
+**Swift Techniques**:
+- `Grid<Character>` from AoCTools for 2D parsing
+- `Point.neighbors(adjacency: .all)` for directional neighbors
+- `Set<Point>` for efficient state tracking
+- `.filter { }` with closure for accessibility check
+- Guard clauses for early exit
+
+**Related Patterns**:
+- Cellular automata (Conway's Game of Life)
+- Flood fill algorithms
+- Minesweeper neighbor counting
+- Iterative simulation until convergence
+- State-based removal cascades
+
+**Neighbor-Counting Adjacency Options**:
+```swift
+.cardinal  // 4 neighbors: N, S, E, W
+.ordinal   // 4 diagonal neighbors: NE, NW, SE, SW
+.all       // All 8 neighbors (cardinal + ordinal) ← Used today
+```
+
+**When to Use This Pattern**:
+- ✅ Counting neighbors in 2D grids
+- ✅ Spatial analysis (minesweeper, cellular automata)
+- ✅ Iterative removal/addition based on neighbor state
+- ✅ Flood fill with conditions
+- ✅ Grid-based game mechanics
+
+**Answers**:
+- Part 1: 1540
+- Part 2: 8972
 
 ---
 
