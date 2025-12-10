@@ -34,4 +34,23 @@ To run tests, use `swift test` for all tests, or e.g. `swift test --filter TDOCT
 
 Use the included `input.sh` script to download your puzzle input. To be able to run this script, [grab the session cookie](https://www.reddit.com/r/adventofcode/comments/a2vonl/how_to_download_inputs_with_a_script/) from [adventofcode.com](https://adventofcode.com) and create a `.aoc-session` file with the contents. `input.sh` downloads the input for the current day by default, use `input.sh X` to download day X's input.
 
+## 2025 Progress
+
+| Day | Title | Stars | Key Technique |
+|-----|-------|:-----:|---------------|
+| [1](Sources/Day01.swift) | Secret Entrance | ⭐⭐ | Simulation + Modular Arithmetic |
+| [2](Sources/Day02.swift) | Gift Shop | ⭐⭐ | Arithmetic Pattern Detection |
+| [3](Sources/Day03.swift) | Lobby | ⭐⭐ | Suffix Maximum + Monotonic Stack |
+| [4](Sources/Day04.swift) | Printing Department | ⭐⭐ | Neighbor-Counting Grid + Simulation |
+| [5](Sources/Day05.swift) | Cafeteria | ⭐⭐ | PointFree Parsing + Interval Merging |
+| 6 | | | |
+| 7 | | | |
+| 8 | | | |
+| 9 | | | |
+| 10 | | | |
+| 11 | | | |
+| 12 | | | |
+
+**Total: 10/24 stars** ⭐
+
 <!--- advent_readme_stars table --->

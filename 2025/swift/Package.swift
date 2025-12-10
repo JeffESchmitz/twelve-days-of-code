@@ -23,10 +23,11 @@ let package = Package(
             ],
             path: "Sources",
             exclude: [
-                "Day01-learnings.md", 
+                "Day01-learnings.md",
                 "Day02-learnings.md",
                 "Day03-learnings.md",
                 "Day04-learnings.md",
+                "Day05-learnings.md",
                 ]
         ),
         .testTarget(
