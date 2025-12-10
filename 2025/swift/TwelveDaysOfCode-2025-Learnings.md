@@ -4,7 +4,7 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 4, 2025
+**Last Updated**: December 10, 2025
 **Progress**: Days 1-12 (4 solved so far, 8 stars)
 
 ---
@@ -1134,6 +1134,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Last updated: December 3, 2025*
-*Days completed: 2 / 12 (4 stars)*
-*Next up: Day 3! 🎄*
+*Last updated: December 10, 2025*
+*Days completed: 4 / 12 (8 stars)*
+*Next up: Day 5 - Safety Manual! 🎄*

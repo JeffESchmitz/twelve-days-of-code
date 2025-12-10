@@ -22,7 +22,12 @@ let package = Package(
                 .product(name: "Collections", package: "swift-collections"),
             ],
             path: "Sources",
-            exclude: ["Day01-learnings.md", "Day02-learnings.md"]
+            exclude: [
+                "Day01-learnings.md", 
+                "Day02-learnings.md",
+                "Day03-learnings.md",
+                "Day04-learnings.md",
+                ]
         ),
         .testTarget(
             name: "TDOCTests",
