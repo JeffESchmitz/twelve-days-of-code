@@ -43,7 +43,7 @@ Use the included `input.sh` script to download your puzzle input. To be able to 
 | [3](Sources/Day03.swift) | Lobby | ⭐⭐ | Suffix Maximum + Monotonic Stack |
 | [4](Sources/Day04.swift) | Printing Department | ⭐⭐ | Neighbor-Counting Grid + Simulation |
 | [5](Sources/Day05.swift) | Cafeteria | ⭐⭐ | PointFree Parsing + Interval Merging |
-| 6 | | | |
+| [6](Sources/Day06.swift) | Trash Compactor | ⭐⭐ | Column-Based Grid Parsing |
 | 7 | | | |
 | 8 | | | |
 | 9 | | | |
@@ -51,6 +51,6 @@ Use the included `input.sh` script to download your puzzle input. To be able to 
 | 11 | | | |
 | 12 | | | |
 
-**Total: 10/24 stars** ⭐
+**Total: 12/24 stars** ⭐
 
 <!--- advent_readme_stars table --->
