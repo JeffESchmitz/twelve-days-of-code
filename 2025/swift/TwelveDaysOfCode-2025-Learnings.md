@@ -408,16 +408,16 @@ Look for these signs that a three-phase approach will help:
 
 Use this checklist when reading any AoC problem:
 
-✅ **Goal**: What's the final answer we need? (number, coordinate, string, etc.)
-✅ **World**: What space/environment? (grid, graph, list, etc.)
-✅ **Start/End**: Where do we begin? Where do we finish?
-✅ **Rules**: How can we move/act? What transitions are allowed?
-✅ **Obstacles**: What blocks us or prevents certain actions?
-✅ **Input format**: How is data provided? (lines, grid, comma-separated, etc.)
-✅ **Critical numbers**: Any magic numbers? (1024, 50, etc.) Are they exact or approximate?
-✅ **Example**: Can we trace through the example? Do we get expected answer?
-✅ **Algorithm**: What CS pattern fits this problem?
-✅ **Edge cases**: What could break our solution? (empty input, no solution, boundary conditions)
+✅ **Goal**: What's the final answer we need? (number, coordinate, string, etc.).  
+✅ **World**: What space/environment? (grid, graph, list, etc.).  
+✅ **Start/End**: Where do we begin? Where do we finish?  
+✅ **Rules**: How can we move/act? What transitions are allowed?  
+✅ **Obstacles**: What blocks us or prevents certain actions?  
+✅ **Input format**: How is data provided? (lines, grid, comma-separated, etc.).  
+✅ **Critical numbers**: Any magic numbers? (1024, 50, etc.) Are they exact or   approximate?  
+✅ **Example**: Can we trace through the example? Do we get expected answer?    
+✅ **Algorithm**: What CS pattern fits this problem?  
+✅ **Edge cases**: What could break our solution? (empty input, no solution, boundary conditions).   
 
 ---
 

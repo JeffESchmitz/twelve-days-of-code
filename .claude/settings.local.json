@@ -40,9 +40,15 @@
       "Bash(git pull:*)",
       "Bash(git stash:*)",
       "Bash(swift run:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "disabledMcpjsonServers": [
+    "XcodeBuildMCP",
+    "mcp-atlassian"
+  ]
 }
