@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 10, 2025
-**Progress**: Days 1-12 (4 solved so far, 8 stars)
+**Last Updated**: December 12, 2025
+**Progress**: Days 1-12 (7 solved so far, 14 stars)
 
 ---
 
@@ -30,9 +30,9 @@
 | 2 | Gift Shop | Arithmetic Pattern Detection + Performance Profiling | ⭐⭐ Medium |
 | 3 | Lobby | Greedy Optimization + Monotonic Stack | ⭐⭐ Medium |
 | 4 | Printing Department | Neighbor-Counting Grid + Iterative Simulation | ⭐⭐ Medium |
-| 5 | TBD | TBD | ⭐ TBD |
-| 6 | TBD | TBD | ⭐ TBD |
-| 7 | TBD | TBD | ⭐ TBD |
+| 5 | Cafeteria | PointFree Parsing + Interval Merging | ⭐⭐ Medium |
+| 6 | Trash Compactor | Column-Based Grid Parsing | ⭐⭐ Easy |
+| 7 | Laboratories | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups | ⭐⭐ Medium |
 | 8 | TBD | TBD | ⭐ TBD |
 | 9 | TBD | TBD | ⭐ TBD |
 | 10 | TBD | TBD | ⭐ TBD |
@@ -996,6 +996,135 @@ Used Puzzle Teacher approach (Socratic method) to discover the solution through 
 
 ---
 
+### Day 7: Laboratories
+
+**The Challenge**: A tachyon beam enters a manifold at position `S` and travels downward. When it hits a splitter (`^`), the beam stops and two new beams emerge (left and right). Part 1 counts splits; Part 2 counts distinct "timelines" (quantum interpretation where paths don't merge).
+
+**Key Insights**:
+
+1. **The Data Structure IS the Algorithm**
+
+   The critical difference between Part 1 and Part 2 comes down to **one data structure choice**:
+
+   | Part | Data Structure | Behavior | What We Count |
+   |------|---------------|----------|---------------|
+   | Part 1 | `Set<Int>` | Beams in same column **merge** | Total splits |
+   | Part 2 | `[Int: Int]` | Timelines in same column **stay separate** | Total timelines |
+
+   **Part 1 - Beams Merge**:
+   ```
+   Column 7 has a beam + Column 7 gets another beam = Column 7 has 1 beam
+   Set automatically deduplicates!
+   ```
+
+   **Part 2 - Timelines Don't Merge**:
+   ```
+   Column 7 has 1 timeline + Column 7 gets 1 timeline = Column 7 has 2 timelines
+   Dictionary tracks the COUNT at each column
+   ```
+
+2. **Row-by-Row Simulation Pattern**
+   ```swift
+   // Both parts use identical simulation logic:
+   1. Start with initial state at S's column
+   2. For each row (going downward):
+      - For each active position:
+        - If splitter (^): split left/right
+        - Else: continue downward
+      - Remove positions that went off edges
+   3. Return final count
+   ```
+
+3. **Swift String Indexing is O(n), Not O(1)!**
+
+   In the baseline code:
+   ```swift
+   let charIndex = line.index(line.startIndex, offsetBy: col)
+   let char = line[charIndex]
+   ```
+
+   Swift has to **walk through the string from the beginning** to find position `col`. Why? Because Swift strings use Unicode grapheme clusters (emoji like 👨‍👩‍👧‍👦 are single "characters"), so it can't just jump to byte offset `col`.
+
+4. **Pre-Parsing Optimization (73% Faster!)**
+
+   **Before** (O(n) string indexing in hot loop):
+   ```swift
+   if line[charIndex] == "^" { ... }
+   ```
+
+   **After** (O(1) Set lookup in hot loop):
+   ```swift
+   // During init - do string work once
+   let splitters: [Set<Int>] = lines.map { line in
+       var cols = Set<Int>()
+       for (idx, char) in line.enumerated() where char == "^" {
+           cols.insert(idx)
+       }
+       return cols
+   }
+
+   // During simulation - fast Set lookup
+   if rowSplitters.contains(col) { ... }
+   ```
+
+   This is a classic optimization: **precompute expensive operations, use O(1) lookups at runtime**.
+
+5. **Performance Benchmarks**
+
+   We tested multiple implementation approaches:
+
+   | Approach | Total Time | vs Baseline |
+   |----------|------------|-------------|
+   | Baseline (imperative) | 2.503ms | — |
+   | Higher-order reduce/flatMap | 3.56ms | **42% slower** |
+   | Optimized functional (no intermediate arrays) | 2.033ms | **19% faster** |
+   | **Pre-parsed splitters** | **0.685ms** | **73% faster** |
+
+6. **Why Higher-Order Functions Were Slower**
+
+   The `reduce`/`flatMap` version created intermediate arrays:
+   ```swift
+   // Creates temporary [(Int, Int)] array, then reduces it
+   let updates = timelines.flatMap { (col, count) -> [(Int, Int)] in
+       return line[charIndex] == "^"
+           ? [(col - 1, count), (col + 1, count)]
+           : [(col, count)]
+   }
+   timelines = updates.reduce(into: [:]) { ... }
+   ```
+
+   Each iteration allocates and deallocates throwaway collections. The imperative version modifies dictionaries in place with no allocations.
+
+**Pattern Recognition - "Merge vs. Don't Merge"**:
+
+This is a common pattern in AoC problems:
+
+| Scenario | Use | Example |
+|----------|-----|---------|
+| "How many unique X?" | `Set` | Unique positions visited |
+| "How many total X?" | `Dictionary` with counts | Total paths, timelines |
+| "Does X exist?" | `Set.contains()` | Is position blocked? |
+| "How many X at each Y?" | `Dictionary` | Count per category |
+
+**Swift Techniques**:
+- `dict[key, default: 0] += count` for safe accumulation
+- `Set<Int>` for O(1) membership testing
+- `line.enumerated()` for index + character iteration
+- Pre-parsing into efficient lookup structures
+
+**Key Takeaways**:
+1. **Data structure choice determines behavior** - Set vs Dictionary completely changes the semantics
+2. **Read Part 2 carefully** - The "quantum" twist meant paths don't merge
+3. **Track counts, not individuals** - When numbers get huge, aggregate!
+4. **Same algorithm, different accounting** - Both parts use identical simulation logic
+5. **Swift String indexing is O(n)** - Pre-parse to avoid string operations in hot loops
+
+**Answers**:
+- Part 1: 1,626 splits
+- Part 2: 48,989,920,237,096 timelines
+
+---
+
 ## Preparation and Strategy
 
 ### Patterns to Master
@@ -1134,6 +1263,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Last updated: December 10, 2025*
-*Days completed: 4 / 12 (8 stars)*
-*Next up: Day 5 - Safety Manual! 🎄*
+*Last updated: December 12, 2025*
+*Days completed: 7 / 12 (14 stars)*
+*Next up: Day 8! 🎄*
