@@ -155,11 +155,82 @@ if let colIndex = line.firstIndex(of: "S") {
 
 ## Performance
 
-Both parts run in ~2ms:
-- Part 1: 1.6ms
-- Part 2: 2.1ms
-
 The dictionary approach scales well because we're tracking counts, not individual timelines. If we tracked each timeline separately, Part 2 would explode to ~49 trillion items!
+
+### Benchmark Results
+
+We tested multiple implementation approaches:
+
+| Approach | Total Time | vs Baseline |
+|----------|------------|-------------|
+| Baseline (imperative) | 2.503ms | — |
+| Higher-order reduce/flatMap | 3.56ms | **42% slower** |
+| Optimized functional (no intermediate arrays) | 2.033ms | **19% faster** |
+| **Pre-parsed splitters** | **0.685ms** | **73% faster** |
+
+### Why Pre-Parsing is 73% Faster
+
+The key insight: **Swift's String indexing is O(n), not O(1)**.
+
+In the baseline code, every time we check a character:
+
+```swift
+let charIndex = line.index(line.startIndex, offsetBy: col)
+let char = line[charIndex]
+```
+
+Swift has to **walk through the string from the beginning** to find position `col`. Why? Because Swift strings use Unicode grapheme clusters (emoji like 👨‍👩‍👧‍👦 are single "characters"), so it can't just jump to byte offset `col`.
+
+**Baseline (during simulation):**
+- For each row (149 rows)
+- For each active beam position
+- Do O(n) string walk to check one character
+
+**Pre-parsed (during init):**
+- Scan each string once, record all `^` positions into a `Set<Int>`
+- During simulation: `rowSplitters.contains(col)` is **O(1)** Set lookup
+
+```swift
+// Before: O(n) string indexing in hot loop
+if line[charIndex] == "^" { ... }
+
+// After: O(1) Set lookup in hot loop
+if rowSplitters.contains(col) { ... }
+```
+
+### The Optimization Pattern
+
+This is a classic optimization: **precompute expensive operations, use O(1) lookups at runtime**.
+
+```swift
+// During init - do string work once
+let splitters: [Set<Int>] = lines.map { line in
+    var cols = Set<Int>()
+    for (idx, char) in line.enumerated() where char == "^" {
+        cols.insert(idx)
+    }
+    return cols
+}
+
+// During simulation - fast Set lookup
+if rowSplitters.contains(col) { ... }
+```
+
+### Why Higher-Order Functions Were Slower
+
+The `reduce`/`flatMap` version created intermediate arrays:
+
+```swift
+// Creates temporary [(Int, Int)] array, then reduces it
+let updates = timelines.flatMap { (col, count) -> [(Int, Int)] in
+    return line[charIndex] == "^"
+        ? [(col - 1, count), (col + 1, count)]
+        : [(col, count)]
+}
+timelines = updates.reduce(into: [:]) { ... }
+```
+
+Each iteration allocates and deallocates throwaway collections. The imperative version modifies dictionaries in place with no allocations.
 
 ## Answers
 
@@ -173,3 +244,4 @@ The dictionary approach scales well because we're tracking counts, not individua
 3. **Track counts, not individuals** - When numbers get huge, aggregate!
 4. **Same algorithm, different accounting** - Both parts use identical simulation logic
 5. **Verify with multiple languages** - Python confirmation caught potential bugs early
+6. **Swift String indexing is O(n)** - Pre-parse to avoid string operations in hot loops
