@@ -44,13 +44,13 @@ Use the included `input.sh` script to download your puzzle input. To be able to 
 | [4](Sources/Day04.swift) | Printing Department | ⭐⭐ | Neighbor-Counting Grid + Simulation |
 | [5](Sources/Day05.swift) | Cafeteria | ⭐⭐ | PointFree Parsing + Interval Merging |
 | [6](Sources/Day06.swift) | Trash Compactor | ⭐⭐ | Column-Based Grid Parsing |
-| 7 | | | |
+| [7](Sources/Day07.swift) | Laboratories | ⭐⭐ | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups |
 | 8 | | | |
 | 9 | | | |
 | 10 | | | |
 | 11 | | | |
 | 12 | | | |
 
-**Total: 12/24 stars** ⭐
+**Total: 14/24 stars** ⭐
 
 <!--- advent_readme_stars table --->
