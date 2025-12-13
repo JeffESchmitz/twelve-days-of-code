@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 12, 2025
-**Progress**: Days 1-12 (7 solved so far, 14 stars)
+**Last Updated**: December 13, 2025
+**Progress**: Days 1-12 (8 solved so far, 16 stars)
 
 ---
 
@@ -33,7 +33,7 @@
 | 5 | Cafeteria | PointFree Parsing + Interval Merging | ⭐⭐ Medium |
 | 6 | Trash Compactor | Column-Based Grid Parsing | ⭐⭐ Easy |
 | 7 | Laboratories | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups | ⭐⭐ Medium |
-| 8 | TBD | TBD | ⭐ TBD |
+| 8 | Playground | Union-Find (Disjoint Set Union) + Kruskal's MST | ⭐⭐ Medium |
 | 9 | TBD | TBD | ⭐ TBD |
 | 10 | TBD | TBD | ⭐ TBD |
 | 11 | TBD | TBD | ⭐ TBD |
@@ -1125,6 +1125,116 @@ This is a common pattern in AoC problems:
 
 ---
 
+### Day 8: Playground
+
+**The Challenge**: Connect junction boxes in 3D space by finding closest pairs. Boxes in the same circuit don't need reconnecting. Part 1 processes 1000 pairs; Part 2 connects until all boxes form one circuit.
+
+**Key Insights**:
+
+1. **Union-Find (Disjoint Set Union) - A Fundamental CS Data Structure**
+
+   Two operations, both nearly O(1):
+   - **find(x):** Which circuit is element x in?
+   - **union(x, y):** Merge circuits containing x and y
+
+   ```swift
+   class UnionFind {
+       private var parent: [Int]  // parent[i] = parent of element i
+       private var size: [Int]    // size[i] = circuit size rooted at i
+
+       func find(_ element: Int) -> Int {
+           if parent[element] != element {
+               parent[element] = find(parent[element])  // Path compression
+           }
+           return parent[element]
+       }
+
+       func union(_ first: Int, _ second: Int) -> Bool {
+           var rootFirst = find(first)
+           var rootSecond = find(second)
+
+           if rootFirst == rootSecond { return false }  // Same circuit
+
+           // Union by size: attach smaller to larger
+           if size[rootFirst] < size[rootSecond] {
+               swap(&rootFirst, &rootSecond)
+           }
+           parent[rootSecond] = rootFirst
+           size[rootFirst] += size[rootSecond]
+           return true
+       }
+   }
+   ```
+
+2. **Why Class, Not Struct?**
+
+   `find()` does **path compression** - it mutates `parent` even during a "read":
+   ```swift
+   parent[element] = find(parent[element])  // ← MUTATION during lookup!
+   ```
+
+   This is **shared mutable state** - the classic use case for reference types.
+
+3. **Kruskal's Algorithm (Partial)**
+
+   - Calculate all pairwise distances
+   - Sort pairs by distance (shortest first)
+   - Process pairs: if different circuits → union; if same → skip
+   - Stop after N pairs (Part 1) or when 1 circuit remains (Part 2)
+
+4. **Squared Distance Trick**
+
+   ```swift
+   func euclideanDistanceSquared(to other: Point3) -> Int {
+       let deltaX = x - other.x
+       let deltaY = y - other.y
+       let deltaZ = z - other.z
+       return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
+   }
+   ```
+
+   - Avoids `sqrt()` and floating point
+   - Same sort order: if √a < √b, then a < b
+
+5. **Comparable Protocol for Clean Sorting**
+
+   ```swift
+   struct JunctionPair: Comparable {
+       let distance: Int
+       let firstIndex: Int
+       let secondIndex: Int
+
+       static func < (lhs: JunctionPair, rhs: JunctionPair) -> Bool {
+           lhs.distance < rhs.distance
+       }
+   }
+
+   pairs.sort()  // Just works!
+   ```
+
+**When to Use Union-Find**:
+- "Are X and Y connected?"
+- "Group elements by connectivity"
+- "Find connected components"
+- "Merge groups incrementally"
+
+**Performance**:
+- Part 1: 777ms
+- Part 2: 779ms
+- Complexity: O(n² log n) for n boxes (~500K pairs for 1000 boxes)
+
+**Swift Techniques**:
+- `class` for shared mutable state (path compression mutates during reads)
+- `Comparable` protocol for custom sorting
+- Nested loops with `(i+1)..<n` for unique pairs
+- `Point3` from AoCTools for 3D coordinates
+
+**Answers**:
+- Part 1: 54,600 (top 3 circuit sizes: 65 × 30 × 28)
+- Part 2: 107,256,172 (X coordinates of final connecting pair)
+
+---
+
 ## Preparation and Strategy
 
 ### Patterns to Master
@@ -1263,6 +1373,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Last updated: December 12, 2025*
-*Days completed: 7 / 12 (14 stars)*
-*Next up: Day 8! 🎄*
+*Last updated: December 13, 2025*
+*Days completed: 8 / 12 (16 stars)*
+*Next up: Day 9! 🎄*
