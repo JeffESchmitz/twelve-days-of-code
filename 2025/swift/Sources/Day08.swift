@@ -68,12 +68,10 @@ class UnionFind {
 
     /// Get sizes of all circuits, sorted descending
     func circuitSizes() -> [Int] {
-        var sizes: [Int] = []
-        for index in 0..<parent.count where parent[index] == index {
-            // This is a root - add its circuit size
-            sizes.append(size[index])
-        }
-        return sizes.sorted(by: >)
+        parent.enumerated()
+            .filter { $0.element == $0.offset }  // Root nodes only
+            .map { size[$0.offset] }
+            .sorted(by: >)
     }
 }
 
@@ -96,88 +94,59 @@ final class Day08: AdventOfCodeDay {
     // Parsed junction box positions
     let junctionBoxes: [Point3]
 
+    // Pre-computed sorted pairs (shared between part1 and part2)
+    private let sortedPairs: [JunctionPair]
+
     init(input: String) {
         // Parse each line: "162,817,812" -> Point3(162, 817, 812)
-        self.junctionBoxes = input.lines.compactMap { line -> Point3? in
+        let boxes = input.lines.compactMap { line -> Point3? in
             let nums = line.integers()
             guard nums.count == 3 else { return nil }
             return Point3(nums[0], nums[1], nums[2])
         }
+        self.junctionBoxes = boxes
+
+        // Generate all pairs using flatMap (higher-order) and sort once
+        self.sortedPairs = boxes.indices.flatMap { firstIdx in
+            ((firstIdx + 1)..<boxes.count).map { secondIdx in
+                JunctionPair(
+                    distance: boxes[firstIdx].euclideanDistanceSquared(to: boxes[secondIdx]),
+                    firstIndex: firstIdx,
+                    secondIndex: secondIdx
+                )
+            }
+        }.sorted()
     }
 
     func part1() async -> Int {
-        let boxCount = junctionBoxes.count
+        let unionFind = UnionFind(junctionBoxes.count)
 
-        // Step 1: Generate all pairs with their distances
-        var pairs: [JunctionPair] = []
-
-        for firstIdx in 0..<boxCount {
-            for secondIdx in (firstIdx + 1)..<boxCount {
-                let dist = junctionBoxes[firstIdx].euclideanDistanceSquared(to: junctionBoxes[secondIdx])
-                pairs.append(JunctionPair(distance: dist, firstIndex: firstIdx, secondIndex: secondIdx))
-            }
-        }
-
-        // Step 2: Sort pairs by distance (shortest first)
-        pairs.sort()
-
-        // Step 3: Process the 1000 shortest pairs using Union-Find
-        let unionFind = UnionFind(boxCount)
-        let pairsToProcess = 1000
-
-        for pairIndex in 0..<min(pairsToProcess, pairs.count) {
-            let pair = pairs[pairIndex]
-            // Try to merge - if already same circuit, nothing happens
+        // Process 1000 shortest pairs
+        sortedPairs.prefix(1000).forEach { pair in
             _ = unionFind.union(pair.firstIndex, pair.secondIndex)
         }
 
-        // Step 4: Get circuit sizes and multiply top 3
-        let sizes = unionFind.circuitSizes()
-        let top3 = sizes.prefix(3)
-
-        return top3.reduce(1, *)
+        // Multiply top 3 circuit sizes
+        return unionFind.circuitSizes().prefix(3).reduce(1, *)
     }
 
     func part2() async -> Int {
-        let boxCount = junctionBoxes.count
-
-        // Step 1: Generate all pairs with their distances (same as part1)
-        var pairs: [JunctionPair] = []
-
-        for firstIdx in 0..<boxCount {
-            for secondIdx in (firstIdx + 1)..<boxCount {
-                let dist = junctionBoxes[firstIdx].euclideanDistanceSquared(to: junctionBoxes[secondIdx])
-                pairs.append(JunctionPair(distance: dist, firstIndex: firstIdx, secondIndex: secondIdx))
-            }
-        }
-
-        // Step 2: Sort pairs by distance (shortest first)
-        pairs.sort()
-
-        // Step 3: Process pairs until all boxes are in ONE circuit
-        let unionFind = UnionFind(boxCount)
-        var circuitsRemaining = boxCount  // Start with each box in its own circuit
+        let unionFind = UnionFind(junctionBoxes.count)
+        var circuitsRemaining = junctionBoxes.count
         var lastMergedPair: JunctionPair?
 
-        for pair in pairs {
-            // Try to merge - if successful, we joined two circuits
+        // union() has side effects, can't use where clause
+        // swiftlint:disable for_where
+        for pair in sortedPairs {
             if unionFind.union(pair.firstIndex, pair.secondIndex) {
                 lastMergedPair = pair
                 circuitsRemaining -= 1
-
-                // All boxes in one circuit?
-                if circuitsRemaining == 1 {
-                    break
-                }
+                if circuitsRemaining == 1 { break }
             }
         }
+        // swiftlint:enable for_where
 
-        // Step 4: Multiply X coordinates of the last merged pair
         guard let finalPair = lastMergedPair else { return 0 }
-
-        let xFirst = junctionBoxes[finalPair.firstIndex].x
-        let xSecond = junctionBoxes[finalPair.secondIndex].x
-
-        return xFirst * xSecond
+        return junctionBoxes[finalPair.firstIndex].x * junctionBoxes[finalPair.secondIndex].x
     }
 }
