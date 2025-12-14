@@ -61,15 +61,12 @@ final class Day10: AdventOfCodeDay {
             pair.element ? acc | (1 << pair.offset) : acc
         }
 
-        // Early exit if already at target
         if target == 0 { return 0 }
 
-        // Precompute button masks
         let buttonMasks = machine.buttons.map { button in
             button.reduce(0) { $0 | (1 << $1) }
         }
 
-        // BFS from state 0 to target
         var visited = Set<Int>([0])
         var queue = Deque<(state: Int, presses: Int)>([(0, 0)])
 
@@ -86,20 +83,32 @@ final class Day10: AdventOfCodeDay {
             }
         }
 
-        return -1  // No solution found
+        return -1
     }
 
     func part2() async -> Int {
-        machines.map { minimumJoltagePresses($0) }.sum()
+        await withTaskGroup(of: Int.self) { group in
+            for machine in machines {
+                group.addTask {
+                    self.minimumJoltagePresses(machine)
+                }
+            }
+            var total = 0
+            for await result in group {
+                total += result
+            }
+            return total
+        }
     }
 
-    /// Solve using rational Gaussian elimination then smart grid search over free variables
-    private func minimumJoltagePresses(_ machine: Machine, debug: Bool = false) -> Int {
+    /// Optimized: Rational Gaussian Elimination -> Integer Grid Search
+    private func minimumJoltagePresses(_ machine: Machine) -> Int {
         let target = machine.joltages
         let numCounters = target.count
         let numButtons = machine.buttons.count
 
         // 1. Build augmented matrix (Rational Arithmetic)
+        // Matrix[row][col] stores (numerator, denominator)
         var matrix: [[(Int, Int)]] = (0..<numCounters).map { row in
             var rowData = [(Int, Int)](repeating: (0, 1), count: numButtons + 1)
             for col in 0..<numButtons {
@@ -111,7 +120,7 @@ final class Day10: AdventOfCodeDay {
             return rowData
         }
 
-        // --- Rational Helper Functions ---
+        // --- Rational Helper Functions (Inlined for performance context) ---
         func gcd(_ a: Int, _ b: Int) -> Int { b == 0 ? abs(a) : gcd(b, a % b) }
         func reduce(_ r: (Int, Int)) -> (Int, Int) {
             if r.0 == 0 { return (0, 1) }
@@ -154,9 +163,7 @@ final class Day10: AdventOfCodeDay {
             }
 
             if foundPivot != pivotRow {
-                let temp = matrix[pivotRow]
-                matrix[pivotRow] = matrix[foundPivot]
-                matrix[foundPivot] = temp
+                matrix.swapAt(pivotRow, foundPivot)
             }
 
             pivotCols.append(pivotCol)
@@ -180,7 +187,7 @@ final class Day10: AdventOfCodeDay {
 
         // 3. Consistency Check
         for row in pivotRow..<numCounters {
-            if matrix[row][numButtons].0 != 0 { return -1 }
+            if matrix[row][numButtons].0 != 0 { return 0 } // Inconsistent = 0 contribution
         }
 
         // 4. Identify Free Variables
@@ -192,16 +199,15 @@ final class Day10: AdventOfCodeDay {
             var total = 0
             for row in 0..<pivotCols.count {
                 let val = matrix[row][numButtons]
-                guard val.1 != 0, val.0 % val.1 == 0 else { return -1 }
+                guard val.1 != 0, val.0 % val.1 == 0 else { return 0 }
                 let intVal = val.0 / val.1
-                guard intVal >= 0 else { return -1 }
+                guard intVal >= 0 else { return 0 }
                 total += intVal
             }
             return total
         }
 
         // 6. Calculate "Net Cost" for each Free Variable
-        // NetCost = 1 (for the button itself) - sum(coefficients in pivot rows)
         struct FreeVarInfo {
             let colIndex: Int
             let netCost: Double
@@ -216,31 +222,64 @@ final class Day10: AdventOfCodeDay {
             return FreeVarInfo(colIndex: colIdx, netCost: costSum)
         }
 
-        // 7. Sort Free Vars: Process "most negative cost" first
+        // Sort Free Vars: Process "most negative cost" first
         let sortedFreeVars = freeVarInfos.sorted { $0.netCost < $1.netCost }
 
-        // 8. Grid Search
+        // 7. Convert to Integer Arithmetic
+        // Find LCM of all relevant denominators to eliminate fractions
+        func lcm(_ a: Int, _ b: Int) -> Int {
+            let a = abs(a), b = abs(b)
+            if a == 0 || b == 0 { return 0 }
+            return (a / gcd(a, b)) * b
+        }
+
+        var commonDenom = 1
+        for i in 0..<pivotCols.count {
+            commonDenom = lcm(commonDenom, matrix[i][numButtons].1) // RHS
+            for freeVar in freeVars {
+                commonDenom = lcm(commonDenom, matrix[i][freeVar].1) // Coeffs
+            }
+        }
+
+        // Pre-compute integer coefficients for search
+        struct PivotRowInt {
+            let rhsScaled: Int
+            let coeffsScaled: [Int] // mapped to sortedFreeVars
+        }
+
+        var pivotRowsInt: [PivotRowInt] = []
+        pivotRowsInt.reserveCapacity(pivotCols.count)
+
+        for i in 0..<pivotCols.count {
+            let rhs = matrix[i][numButtons]
+            let rhsScaled = (rhs.0 * commonDenom) / rhs.1
+
+            var rowCoeffs: [Int] = []
+            rowCoeffs.reserveCapacity(sortedFreeVars.count)
+            for fv in sortedFreeVars {
+                let r = matrix[i][fv.colIndex]
+                let cScaled = (r.0 * commonDenom) / r.1
+                rowCoeffs.append(cScaled)
+            }
+            pivotRowsInt.append(PivotRowInt(rhsScaled: rhsScaled, coeffsScaled: rowCoeffs))
+        }
+
+        // 8. Grid Search (Integer Arithmetic)
         let safeMax = target.max() ?? 100
         var bestTotal = Int.max
 
-        // Precompute pivot rows for speed
-        let pivotRows = pivotCols.indices.map { i -> (rhs: (Int, Int), coeffs: [(Int, Int)]) in
-            let rhs = matrix[i][numButtons]
-            let coeffs = sortedFreeVars.map { matrix[i][$0.colIndex] }
-            return (rhs, coeffs)
-        }
+        // Mutable state array for recursion
+        var currentPivotTerms = [Int](repeating: 0, count: pivotRowsInt.count)
 
-        func search(_ idx: Int, _ currentFreeSum: Int, _ currentPivotUpdates: [(Int, Int)]) {
+        func search(_ idx: Int, _ currentFreeSum: Int) {
             if idx == sortedFreeVars.count {
                 var pivotSum = 0
-                for (rowIndex, rowData) in pivotRows.enumerated() {
-                    let val = sub(rowData.rhs, currentPivotUpdates[rowIndex])
-
-                    guard val.1 != 0, val.0 % val.1 == 0 else { return }
-                    let intVal = val.0 / val.1
-                    guard intVal >= 0 else { return }
-
-                    pivotSum += intVal
+                for i in 0..<pivotRowsInt.count {
+                    let numerator = pivotRowsInt[i].rhsScaled - currentPivotTerms[i]
+                    if numerator % commonDenom != 0 { return }
+                    let xP = numerator / commonDenom
+                    if xP < 0 { return }
+                    pivotSum += xP
                 }
 
                 let total = currentFreeSum + pivotSum
@@ -251,29 +290,30 @@ final class Day10: AdventOfCodeDay {
             }
 
             let info = sortedFreeVars[idx]
-            let range = 0...safeMax
-            // If cost is negative, larger values first; if positive, smaller values first
-            let strideOrder = info.netCost < 0
-                ? Array(range.reversed())
-                : Array(range)
+            let start = info.netCost < 0 ? safeMax : 0
+            let end = info.netCost < 0 ? 0 : safeMax
+            let step = info.netCost < 0 ? -1 : 1
 
-            for val in strideOrder {
-                // Pruning: if we're over budget and cost is positive, break
-                if currentFreeSum + val >= bestTotal && info.netCost > 0 { break }
+            var val = start
+            while (step > 0 ? val <= end : val >= end) {
+                if info.netCost > 0 && (currentFreeSum + val >= bestTotal) { break }
 
-                var nextPivotUpdates = currentPivotUpdates
-                for i in 0..<pivotRows.count {
-                    let contribution = mul(pivotRows[i].coeffs[idx], (val, 1))
-                    nextPivotUpdates[i] = add(nextPivotUpdates[i], contribution)
+                for i in 0..<pivotRowsInt.count {
+                    currentPivotTerms[i] += pivotRowsInt[i].coeffsScaled[idx] * val
                 }
 
-                search(idx + 1, currentFreeSum + val, nextPivotUpdates)
+                search(idx + 1, currentFreeSum + val)
+
+                for i in 0..<pivotRowsInt.count {
+                    currentPivotTerms[i] -= pivotRowsInt[i].coeffsScaled[idx] * val
+                }
+
+                val += step
             }
         }
 
-        let initialUpdates = [(Int, Int)](repeating: (0, 1), count: pivotRows.count)
-        search(0, 0, initialUpdates)
+        search(0, 0)
 
-        return bestTotal == Int.max ? -1 : bestTotal
+        return bestTotal == Int.max ? 0 : bestTotal
     }
 }
