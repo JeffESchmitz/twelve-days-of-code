@@ -42,7 +42,18 @@
       "Bash(swift run:*)",
       "Bash(mkdir:*)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(swiftlint lint:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(cat:*)",
+      "Bash(awk:*)",
+      "Bash(timeout 60 swift run:*)",
+      "Bash(timeout 15 swift run:*)",
+      "Bash(timeout 120 swift test:*)",
+      "Bash(.build/release/TwelveDaysOfCode:*)",
+      "Bash(for i in 1 2 3)",
+      "Bash(do .build/release/TwelveDaysOfCode:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

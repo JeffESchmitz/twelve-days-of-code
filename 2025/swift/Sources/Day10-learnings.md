@@ -162,13 +162,22 @@ This puzzle was solved through collaboration with Gemini, who identified the neg
 
 ## Performance
 
-| Metric | Value |
-|--------|-------|
-| Part 1 | ~13ms |
-| Part 2 | ~15 seconds |
-| Machines | 158 |
-| Free vars (typical) | 2-3 |
-| Search space | ~3.4M states (worst case) |
+| Metric | Before | After (Optimized) |
+|--------|--------|-------------------|
+| Part 1 | ~13ms | ~2ms |
+| Part 2 | ~15 seconds | ~300ms |
+| Machines | 158 | 158 |
+| Free vars (typical) | 2-3 | 2-3 |
+| Search space | ~3.4M states (worst case) | Same |
+
+### Optimization Applied
+
+1. **LCM Scaling**: Convert rational arithmetic to integer arithmetic during grid search
+2. **Mutable Backtracking**: Single array with forward/restore instead of copying
+3. **While Loops**: Avoid array allocations in hot loop
+4. **Parallel Processing**: Use TaskGroup to process machines concurrently
+
+**Speedup: ~50x** (15s → 300ms in release build)
 
 ---
 
