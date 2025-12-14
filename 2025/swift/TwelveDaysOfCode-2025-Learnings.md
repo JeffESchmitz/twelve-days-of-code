@@ -5,7 +5,7 @@
 > Building on the framework and learnings from AoC 2024
 
 **Last Updated**: December 14, 2025
-**Progress**: Days 1-12 (9 solved so far, 18 stars)
+**Progress**: Days 1-12 (10 solved so far, 20 stars)
 
 ---
 
@@ -35,7 +35,7 @@
 | 7 | Laboratories | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups | ⭐⭐ Medium |
 | 8 | Playground | Union-Find (Disjoint Set Union) + Kruskal's MST | ⭐⭐ Medium |
 | 9 | Movie Theater | Ray Casting + Polygon Containment | ⭐⭐ Medium |
-| 10 | TBD | TBD | ⭐ TBD |
+| 10 | Factory | Integer Linear Programming + Gaussian Elimination | ⭐⭐ Hard |
 | 11 | TBD | TBD | ⭐ TBD |
 | 12 | TBD | TBD | ⭐ TBD |
 
@@ -1335,6 +1335,87 @@ This is a common pattern in AoC problems:
 
 ---
 
+### Day 10: Factory (The Hardest Puzzle of 2025!)
+
+**The Challenge**: Part 1 toggles lights (XOR), Part 2 increments counters to reach joltage targets. Part 2 is Integer Linear Programming - the hardest puzzle type we've encountered.
+
+**Key Insights**:
+
+1. **Part 1 is Easy: BFS Over Bitmask States**
+   ```swift
+   let newState = state ^ buttonMask  // XOR toggle
+   ```
+   Standard BFS with state as bitmask. XOR is its own inverse.
+
+2. **Part 2 is ILP: Ax = b, minimize sum(x), x >= 0 integer**
+
+   This is NP-hard in general, but tractable for small problems.
+
+3. **Gaussian Elimination Reduces Dimensionality**
+
+   A 10x13 system (10 counters, 13 buttons) reduces to 3 free variables after elimination. This makes exhaustive search practical (~3.4M states).
+
+4. **THE BREAKTHROUGH: Negative Cost Coefficients**
+
+   The "net cost" of increasing a free variable can be NEGATIVE:
+   ```swift
+   // NetCost = 1 - sum(coefficients in pivot rows)
+   // If NetCost < 0: increasing free var DECREASES total!
+   ```
+
+   **Why?** When free variable coefficients in the reduced matrix are negative, increasing the free variable causes pivot variables to DECREASE by more than the free variable increases.
+
+   **Implication**: Optimal solutions lie at the "far edge" of the feasible region, NOT near zero!
+
+5. **Search Direction Matters**
+   ```swift
+   let order = netCost < 0
+       ? Array(range.reversed())  // High to low
+       : Array(range)             // Low to high
+   ```
+
+6. **Rational Arithmetic for Exactness**
+
+   Floating point precision errors caused incorrect -1 results. Use `(numerator, denominator)` tuples with GCD reduction.
+
+**What Failed (And Why)**:
+
+| Attempt | Result | Why It Failed |
+|---------|--------|---------------|
+| BFS over counter states | Too slow | State space explosion for large targets |
+| Floating point Gaussian | Wrong answers | Precision errors |
+| Independent bounds computation | Missing solutions | Coupled constraints form polytope, not box |
+| Searching from 0 upward | Slow/wrong | Optimal at far edge for negative-cost vars |
+
+**The Winning Algorithm**:
+1. Gaussian elimination with rational arithmetic
+2. Identify free variables (columns without pivots)
+3. Calculate net cost for each free variable
+4. Sort by net cost (most negative first)
+5. Grid search with smart ordering and aggressive pruning
+
+**Collaboration Win**: Solved with help from Gemini, who identified the negative cost coefficient insight!
+
+**Performance**:
+- Part 1: ~13ms (BFS)
+- Part 2: ~15 seconds (ILP with search)
+
+**Mathematical Concepts**:
+- Linear Algebra (Gaussian elimination, RREF)
+- Rational Arithmetic (exact computation)
+- Integer Programming (ILP)
+- Optimization (minimizing over feasible polytope)
+
+**Wrong Submissions**:
+- 13119 (too low) - 16+ machines returning -1
+- 14332 (too low) - 9 machines returning -1
+
+**Answers**:
+- Part 1: 409
+- Part 2: 15489
+
+---
+
 ## Preparation and Strategy
 
 ### Patterns to Master
@@ -1474,5 +1555,5 @@ This document will grow as more days are completed. Sections to expand:
 
 *Document started: December 1, 2025*
 *Last updated: December 14, 2025*
-*Days completed: 9 / 12 (18 stars)*
-*Next up: Day 10! 🎄*
+*Days completed: 10 / 12 (20 stars)*
+*Next up: Day 11! 🎄*
