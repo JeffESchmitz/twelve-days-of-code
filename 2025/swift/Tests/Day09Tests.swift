@@ -43,14 +43,14 @@ struct Day09Tests {
     @Test("Day 9 Part 2", .tags(.testInput))
     func testDay09_part2() async {
         let day = Day09(input: testInput)
-        // Part 2 not yet revealed
-        await #expect(day.part2() == -1)
+        // Largest rectangle using only red/green tiles: (9,5) to (2,3)
+        // Area = (|9-2|+1) * (|5-3|+1) = 8 * 3 = 24
+        await #expect(day.part2() == 24)
     }
 
     @Test("Day 9 Part 2 Solution")
     func testDay09_part2_solution() async {
         let day = Day09(input: Day09.input)
-        // Part 2 not yet revealed
-        await #expect(day.part2() == -1)
+        await #expect(day.part2() == 1552139370)
     }
 }
