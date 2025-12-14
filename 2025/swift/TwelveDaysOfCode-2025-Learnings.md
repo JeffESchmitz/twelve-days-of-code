@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 13, 2025
-**Progress**: Days 1-12 (8 solved so far, 16 stars)
+**Last Updated**: December 14, 2025
+**Progress**: Days 1-12 (9 solved so far, 18 stars)
 
 ---
 
@@ -34,7 +34,7 @@
 | 6 | Trash Compactor | Column-Based Grid Parsing | ⭐⭐ Easy |
 | 7 | Laboratories | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups | ⭐⭐ Medium |
 | 8 | Playground | Union-Find (Disjoint Set Union) + Kruskal's MST | ⭐⭐ Medium |
-| 9 | TBD | TBD | ⭐ TBD |
+| 9 | Movie Theater | Ray Casting + Polygon Containment | ⭐⭐ Medium |
 | 10 | TBD | TBD | ⭐ TBD |
 | 11 | TBD | TBD | ⭐ TBD |
 | 12 | TBD | TBD | ⭐ TBD |
@@ -1235,6 +1235,106 @@ This is a common pattern in AoC problems:
 
 ---
 
+### Day 9: Movie Theater
+
+**The Challenge**: Find the largest rectangle using red tiles as opposite corners. Part 1 allows any rectangle; Part 2 restricts to rectangles within a polygon formed by connecting red tiles.
+
+**Key Insights**:
+
+1. **Inclusive Area Calculation**
+
+   The area formula counts both corner tiles:
+   ```swift
+   let width = abs(tile2.x - tile1.x) + 1
+   let height = abs(tile2.y - tile1.y) + 1
+   let area = width * height
+   ```
+
+   **Example**: Corners at (2,5) and (11,1)
+   - Width = |11-2| + 1 = 10, Height = |5-1| + 1 = 5
+   - Area = 50 (not 36!)
+
+2. **Ray Casting for Point-in-Polygon**
+
+   Classic algorithm to determine if a point is inside a polygon:
+
+   ```swift
+   func isInsidePolygon(_ point: Point) -> Bool {
+       var crossings = 0
+       for edge in verticalEdges {
+           // Cast ray right, count vertical edge crossings
+           if edge.xPos > point.x &&
+              edge.yMin <= point.y &&
+              point.y < edge.yMax {  // Half-open interval
+               crossings += 1
+           }
+       }
+       return crossings % 2 == 1  // Odd = inside
+   }
+   ```
+
+   **How it works**:
+   - Cast a ray from the point horizontally to the right
+   - Count how many polygon edges the ray crosses
+   - Odd crossings = inside, Even crossings = outside
+
+3. **Polygon Edge Intersection Check**
+
+   Corners being valid isn't enough - must also check no polygon edge pierces the rectangle:
+
+   ```swift
+   // Check no vertical edge crosses rectangle interior
+   for edge in verticalEdges
+   where minX < edge.xPos && edge.xPos < maxX &&
+         edge.yMin < maxY && edge.yMax > minY {
+       return false  // Edge pierces rectangle!
+   }
+   ```
+
+   This catches U-shaped polygons where rectangle corners are inside but the rectangle extends outside.
+
+4. **Axis-Aligned Simplification**
+
+   Since all edges are horizontal or vertical:
+   - Only check vertical edges for ray casting
+   - Simple intersection math (no slopes)
+   - Natural decomposition into edge lists
+
+**Complexity**:
+- Part 1: O(n²) - check all pairs
+- Part 2: O(n³) - check all pairs with O(n) validation each
+
+**Performance**:
+- Part 1: ~15ms
+- Part 2: ~8.5 seconds (acceptable for puzzle)
+
+**Swift Techniques**:
+- Private structs for edge types (avoids large_tuple warning)
+- Nested functions for encapsulation
+- `for-where` for clean filtering
+- Guard with multiple comma-separated conditions
+
+**Pattern Recognition**:
+
+| Problem Type | Algorithm |
+|--------------|-----------|
+| Point in polygon | Ray casting |
+| Polygon area | Shoelace formula |
+| Convex hull | Graham scan |
+| Rectangle intersection | Separating axis |
+
+**Key Takeaways**:
+1. **Inclusive vs exclusive counting** - Read problem carefully!
+2. **Ray casting is fundamental** - Know this for polygon problems
+3. **Corners valid ≠ rectangle valid** - Check edge intersections too
+4. **O(n³) can be acceptable** - Brute force often works for puzzle sizes
+
+**Answers**:
+- Part 1: 4,746,238,001
+- Part 2: 1,552,139,370
+
+---
+
 ## Preparation and Strategy
 
 ### Patterns to Master
@@ -1373,6 +1473,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Last updated: December 13, 2025*
-*Days completed: 8 / 12 (16 stars)*
-*Next up: Day 9! 🎄*
+*Last updated: December 14, 2025*
+*Days completed: 9 / 12 (18 stars)*
+*Next up: Day 10! 🎄*

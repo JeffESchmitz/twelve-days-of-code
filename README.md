@@ -13,7 +13,7 @@ This repository contains solutions for **Twelve Days of Code** (formerly Advent 
    ├── 🦅 swift/     23/25 days complete (46⭐)
    └── 🐍 python/    Day 1 ported (learning track)
 📂 2025/
-   └── 🦅 swift/     8/12 days complete (16⭐) — In progress!
+   └── 🦅 swift/     9/12 days complete (18⭐) — In progress!
 ```
 
 ### Languages & Progress
