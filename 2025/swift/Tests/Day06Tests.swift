@@ -5,11 +5,6 @@
 //  Created by Jeff E. Schmitz on 11/16/25.
 //
 
-
-//
-// Twelve Days of Code 2025 Day 6 Tests
-//
-
 import Testing
 @testable import TwelveDaysOfCode
 
