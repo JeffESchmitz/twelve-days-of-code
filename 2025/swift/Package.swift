@@ -30,8 +30,13 @@ let package = Package(
                 "Day03-learnings.md",
                 "Day04-learnings.md",
                 "Day05-learnings.md",
+                "Day06-learnings.md",
+                "Day07-learnings.md",
+                "Day08-learnings.md",
+                "Day09-learnings.md",
+                "Day10-learnings.md",
                 "Day11-learnings.md",
-                ]
+            ]
         ),
         .testTarget(
             name: "TDOCTests",
