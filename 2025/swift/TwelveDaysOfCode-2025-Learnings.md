@@ -5,7 +5,7 @@
 > Building on the framework and learnings from AoC 2024
 
 **Last Updated**: December 15, 2025
-**Progress**: Days 1-12 (11 solved so far, 22 stars)
+**Progress**: Days 1-12 Complete! (12/12 days, 23 stars ⭐)
 
 ---
 
@@ -37,7 +37,7 @@
 | 9 | Movie Theater | Ray Casting + Polygon Containment | ⭐⭐ Medium |
 | 10 | Factory | Integer Linear Programming + Gaussian Elimination | ⭐⭐ Hard |
 | 11 | Reactor | DAG Path Counting + DP Decomposition + Memoization | ⭐⭐ Medium |
-| 12 | TBD | TBD | ⭐ TBD |
+| 12 | Christmas Tree Farm | Polyomino Packing + Exact Cover + Bitmask DLX | ⭐ Hard |
 
 ---
 
@@ -1521,6 +1521,139 @@ This is a common pattern in AoC problems:
 **Answers**:
 - Part 1: 764
 - Part 2: 462,444,153,119,850
+
+---
+
+### Day 12: Christmas Tree Farm (The Grand Finale!)
+
+**The Challenge**: Pack polyomino shapes into rectangular regions. Given 6 shape types with rotation/flip variants, determine which of 1000 regions can fit all their required shapes exactly.
+
+**Key Insights**:
+
+1. **This is NP-Hard: Polyomino Packing / Exact Cover**
+
+   Polyomino packing is a classic NP-complete problem. The naive approach (try all placements) is computationally impossible for dense grids (~97% fill rate).
+
+2. **Bitmask Representation for O(1) Collision Detection**
+
+   Instead of `Set<Point>`, represent each shape as `[UInt64]` bitmasks:
+   ```swift
+   struct BitShape {
+       let rows: [UInt64]  // Each row is a bitmask
+       let width: Int
+       let height: Int
+       let area: Int
+       let anchor: Point   // First cell in row-major order
+   }
+
+   // O(1) collision check per row
+   func canPlace(grid: [UInt64], shape: BitShape, x: Int, y: Int) -> Bool {
+       shape.rows.enumerated().allSatisfy { r, rowMask in
+           (grid[y + r] & (rowMask << x)) == 0
+       }
+   }
+   ```
+
+3. **First Empty Cell Heuristic (DLX-Style)**
+
+   Instead of trying every possible placement, find the **top-leftmost empty cell** and only try shapes that cover it:
+   ```swift
+   guard let fy = grid.firstIndex(where: { $0 != fullRow }) else {
+       return true  // Grid full = success!
+   }
+   let fx = ((~grid[fy]) & fullRow).trailingZeroBitCount
+   ```
+
+   This drastically reduces branching factor - each shape has only ONE valid anchor position.
+
+4. **Slack Handling for Exact Cover**
+
+   If shapes don't perfectly fill the grid, add virtual 1x1 "void" shapes:
+   ```swift
+   let slack = gridArea - shapeArea
+   if slack > 0 {
+       let voidShape = BitShape(rows: [1], width: 1, height: 1, ...)
+       tasks.append(Task(orientations: [voidShape], count: slack, area: 1))
+   }
+   ```
+
+   This converts "fit shapes" into "exact cover" - the grid MUST be perfectly filled.
+
+5. **Iterative Backtracking (Critical!)**
+
+   Recursive backtracking caused **stack overflow** (1000+ recursion depth). Convert to explicit stack:
+   ```swift
+   struct Frame {
+       var taskIdx: Int
+       var orientationIdx: Int
+       var placed: (taskIdx: Int, shape: BitShape, px: Int, py: Int)?
+   }
+
+   var stack: [Frame] = [...]
+   while !stack.isEmpty {
+       // Pop, undo if needed, find empty cell, try placements
+   }
+   ```
+
+6. **Parallel Execution**
+
+   1000 regions are independent - process in parallel:
+   ```swift
+   await withTaskGroup(of: Bool.self, returning: Int.self) { group in
+       regions.forEach { region in
+           group.addTask { self.solveRegion(...) }
+       }
+       return await group.reduce(0) { $0 + ($1 ? 1 : 0) }
+   }
+   ```
+
+7. **Shape Orientation Generation**
+
+   Generate all 8 orientations (4 rotations × 2 flips), deduplicated:
+   ```swift
+   let rotate90: (Set<Point>) -> Set<Point> = { Set($0.map { $0.rotated(by: 90) }) }
+   let flipH: (Set<Point>) -> Set<Point> = { Set($0.map { Point(-$0.x, $0.y) }) }
+
+   let rotations = sequence(first: points, next: rotate90).prefix(4)
+   let allTransforms = rotations.flatMap { [normalize($0), normalize(flipH($0))] }
+   return Array(Set(allTransforms))
+   ```
+
+**What Failed (And Why)**:
+
+| Attempt | Result | Why It Failed |
+|---------|--------|---------------|
+| Naive backtracking | Stack overflow | ~1000+ recursion depth |
+| Try all positions | Too slow | O(n²) positions per shape |
+| Recursive DFS | Crash (SIGBUS) | Stack exhaustion |
+
+**Libraries & Techniques Used**:
+
+- **AoCTools**: `Point`, `Point.rotated(by:)`
+- **swift-algorithms**: `minAndMax()` for efficient bounds calculation
+- **Swift Concurrency**: `withTaskGroup` for parallelism
+- **Higher-Order Functions**: `filter`, `compactMap`, `flatMap`, `reduce`, `allSatisfy`, `forEach`
+- **Labeled Loops**: `searchLoop:` for clean nested breaking
+
+**Performance**:
+- Release build: **5.4ms** for 1000 regions
+- Debug build: ~700ms (100x slower without optimizations)
+
+**Algorithm Pattern Recognition**:
+
+| Problem Type | Algorithm |
+|--------------|-----------|
+| Polyomino packing | Exact cover / DLX |
+| "Can shapes fit?" | Backtracking with pruning |
+| Collision detection | Bitmask AND operations |
+| Multiple independent tasks | Parallel execution |
+
+**Key Takeaway**: NP-hard doesn't mean unsolvable! The right heuristics (first empty cell, bitmask collision, iterative backtracking) turn an "impossible" problem into a 5ms solution.
+
+**Note**: Day 12 has no Part 2 puzzle - just celebration text marking the end of Twelve Days of Code 2025!
+
+**Answers**:
+- Part 1: 437
 
 ---
 
