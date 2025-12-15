@@ -5,7 +5,7 @@
 > Building on the framework and learnings from AoC 2024
 
 **Last Updated**: December 15, 2025
-**Progress**: Days 1-12 Complete! (12/12 days, 23 stars ⭐)
+**Progress**: Days 1-12 Complete! (12/12 days, 24 stars ⭐)
 
 ---
 
@@ -37,7 +37,7 @@
 | 9 | Movie Theater | Ray Casting + Polygon Containment | ⭐⭐ Medium |
 | 10 | Factory | Integer Linear Programming + Gaussian Elimination | ⭐⭐ Hard |
 | 11 | Reactor | DAG Path Counting + DP Decomposition + Memoization | ⭐⭐ Medium |
-| 12 | Christmas Tree Farm | Polyomino Packing + Exact Cover + Bitmask DLX | ⭐ Hard |
+| 12 | Christmas Tree Farm | Polyomino Packing + Exact Cover + Bitmask DLX | ⭐⭐ Hard |
 
 ---
 
@@ -1796,5 +1796,5 @@ This document will grow as more days are completed. Sections to expand:
 
 *Document started: December 1, 2025*
 *Last updated: December 15, 2025*
-*Days completed: 11 / 12 (22 stars)*
-*Next up: Day 12! 🎄*
+*Days completed: 12 / 12 (24 stars)*
+*Twelve Days of Code 2025 Complete! 🎄🎉*
