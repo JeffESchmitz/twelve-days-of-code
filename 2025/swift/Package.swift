@@ -12,6 +12,7 @@ let package = Package(
         .package(url: "https://github.com/gereons/AoCTools", from: "0.1.9"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
     ],
     targets: [
         .executableTarget(
@@ -20,6 +21,7 @@ let package = Package(
                 "AoCTools",
                 .product(name: "Parsing", package: "swift-parsing"),
                 .product(name: "Collections", package: "swift-collections"),
+                .product(name: "Algorithms", package: "swift-algorithms"),
             ],
             path: "Sources",
             exclude: [

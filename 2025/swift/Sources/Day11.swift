@@ -4,6 +4,7 @@
 // https://adventofcode.com/2025/day/11
 //
 
+import Algorithms
 import AoCTools
 
 final class Day11: AdventOfCodeDay {
@@ -51,11 +52,13 @@ final class Day11: AdventOfCodeDay {
     func part2() async -> Int {
         // Case A: svr → dac → fft → out
         // Case B: svr → fft → dac → out
-        let segmentsA = [(svrIdx, dacIdx), (dacIdx, fftIdx), (fftIdx, outIdx)]
-        let segmentsB = [(svrIdx, fftIdx), (fftIdx, dacIdx), (dacIdx, outIdx)]
+        let pathA = [svrIdx, dacIdx, fftIdx, outIdx].adjacentPairs()
+            .map { countPaths(from: $0, to: $1) }
+            .reduce(1, *)
 
-        let pathA = segmentsA.map { countPaths(from: $0.0, to: $0.1) }.reduce(1, *)
-        let pathB = segmentsB.map { countPaths(from: $0.0, to: $0.1) }.reduce(1, *)
+        let pathB = [svrIdx, fftIdx, dacIdx, outIdx].adjacentPairs()
+            .map { countPaths(from: $0, to: $1) }
+            .reduce(1, *)
 
         return pathA + pathB
     }
