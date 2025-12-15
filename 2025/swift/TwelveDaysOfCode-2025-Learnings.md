@@ -4,8 +4,8 @@
 >
 > Building on the framework and learnings from AoC 2024
 
-**Last Updated**: December 14, 2025
-**Progress**: Days 1-12 (10 solved so far, 20 stars)
+**Last Updated**: December 15, 2025
+**Progress**: Days 1-12 (11 solved so far, 22 stars)
 
 ---
 
@@ -36,7 +36,7 @@
 | 8 | Playground | Union-Find (Disjoint Set Union) + Kruskal's MST | ⭐⭐ Medium |
 | 9 | Movie Theater | Ray Casting + Polygon Containment | ⭐⭐ Medium |
 | 10 | Factory | Integer Linear Programming + Gaussian Elimination | ⭐⭐ Hard |
-| 11 | TBD | TBD | ⭐ TBD |
+| 11 | Reactor | DAG Path Counting + DP Decomposition + Memoization | ⭐⭐ Medium |
 | 12 | TBD | TBD | ⭐ TBD |
 
 ---
@@ -1416,6 +1416,114 @@ This is a common pattern in AoC problems:
 
 ---
 
+### Day 11: Reactor
+
+**The Challenge**: Count paths through a directed graph representing a nuclear reactor's signal flow. Part 1 counts all paths from "you" to "out". Part 2 counts paths from "svr" to "out" that visit BOTH "dac" AND "fft" (in any order).
+
+**Key Insights**:
+
+1. **DAG Recognition - The Critical Insight**
+
+   The puzzle states "data can't flow backwards" - this means the graph is a **Directed Acyclic Graph (DAG)**. This enables:
+   - No cycle detection needed (no cycles exist!)
+   - Memoization works perfectly
+   - Path COUNTING instead of path ENUMERATION
+
+2. **The Path Explosion Problem**
+
+   Initial naive approach for Part 2 tried to enumerate all paths:
+   ```swift
+   func countPaths(visited: Set<String>) -> Int {
+       // EXPONENTIAL - billions of paths!
+   }
+   ```
+
+   In a dense DAG with 585 nodes, path count grows exponentially. Runtime: "Heat death of the universe".
+
+3. **DP Decomposition - The Solution**
+
+   **The Key Formula for Part 2**:
+   ```
+   Paths visiting both dac and fft =
+     (svr→dac × dac→fft × fft→out)   // dac before fft
+   + (svr→fft × fft→dac × dac→out)   // fft before dac
+   ```
+
+   **Why Multiplication Works**:
+   - Each segment is independent
+   - If there are 10 ways A→B and 5 ways B→C
+   - There are 10 × 5 = 50 ways A→B→C
+
+   This turns path ENUMERATION into path COUNTING - from O(2^n) to O(n).
+
+4. **Memoized DFS for DAGs**
+   ```swift
+   private func countPaths(from start: Int, to end: Int) -> Int {
+       var memo = [Int](repeating: -1, count: adjacency.count)
+
+       func dfs(_ node: Int) -> Int {
+           if node == end { return 1 }
+           if memo[node] >= 0 { return memo[node] }  // Cached!
+           let count = adjacency[node].reduce(0) { $0 + dfs($1) }
+           memo[node] = count
+           return count
+       }
+       return dfs(start)
+   }
+   ```
+
+5. **Integer Indexing for 5x Speedup**
+
+   Convert string node names to integer indices at parse time:
+   ```swift
+   // Slow: O(1) with hash overhead
+   let graph: [String: [String]]
+
+   // Fast: O(1) pure array access
+   let adjacency: [[Int]]
+   ```
+
+   Performance: 0.5ms → 0.1ms
+
+6. **swift-algorithms: adjacentPairs()**
+
+   Clean waypoint iteration:
+   ```swift
+   [svrIdx, dacIdx, fftIdx, outIdx].adjacentPairs()
+       .map { countPaths(from: $0, to: $1) }
+       .reduce(1, *)
+   ```
+
+**Performance Journey**:
+
+| Version | Total Time |
+|---------|------------|
+| String dictionaries | ~0.5ms |
+| Integer arrays | ~0.1ms |
+| + Higher-order functions | ~0.08ms |
+
+**Algorithm Pattern Recognition**:
+
+| Problem Description | Algorithm |
+|---------------------|-----------|
+| "Count all paths" | DFS with memoization |
+| "No cycles" / "can't go backwards" | DAG - use DP |
+| "Visit both X and Y" | Decompose into segments, multiply |
+
+**Swift Techniques**:
+- `compactMap` for parsing
+- `flatMap` to collect nodes
+- `reduce(into:)` for adjacency list
+- `adjacentPairs()` from swift-algorithms
+
+**Key Takeaway**: When counting paths in a DAG, COUNT don't ENUMERATE. Use memoization and decompose into independent segments.
+
+**Answers**:
+- Part 1: 764
+- Part 2: 462,444,153,119,850
+
+---
+
 ## Preparation and Strategy
 
 ### Patterns to Master
@@ -1554,6 +1662,6 @@ This document will grow as more days are completed. Sections to expand:
 ---
 
 *Document started: December 1, 2025*
-*Last updated: December 14, 2025*
-*Days completed: 10 / 12 (20 stars)*
-*Next up: Day 11! 🎄*
+*Last updated: December 15, 2025*
+*Days completed: 11 / 12 (22 stars)*
+*Next up: Day 12! 🎄*

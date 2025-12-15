@@ -30,6 +30,7 @@ let package = Package(
                 "Day03-learnings.md",
                 "Day04-learnings.md",
                 "Day05-learnings.md",
+                "Day11-learnings.md",
                 ]
         ),
         .testTarget(
