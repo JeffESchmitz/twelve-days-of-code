@@ -78,16 +78,28 @@ Each day includes:
 - "First X that..." → **Binary search**
 - "Count all ways" → **Dynamic programming + memoization**
 - Grid traversal → **BFS/DFS/Flood fill**
+- Connectivity/grouping → **Union-Find (Disjoint Set Union)** *(2025)*
+- Point-in-polygon → **Ray Casting** *(2025)*
+- DAG path counting → **DP decomposition (count, don't enumerate)** *(2025)*
+- Bin packing / exact cover → **Bitmask DLX with backtracking** *(2025)*
 
 **Data Structure Wisdom**
 - `Set.contains()` O(1) vs `Array.contains()` O(n) = **1000x difference**
 - `Deque.popFirst()` O(1) vs `Array.removeFirst()` O(n)
 - Dictionary-based memoization for scaling to massive inputs
+- **Bitmask grids** `[UInt64]` for O(1) collision detection *(2025)*
+- **Set vs Dict** for merge vs accumulate semantics *(2025)*
+- **Pre-parsed lookups** - convert O(n) string ops to O(1) Set lookups *(2025)*
 
 **Three-Phase Architecture**
 1. **Precompute**: Do expensive work once
 2. **Optimize**: Select the best approach
 3. **Scale**: Use caching/memoization for massive inputs
+
+**Advanced Techniques** *(2025)*
+- **Iterative backtracking**: Explicit stack to avoid stack overflow in deep recursion
+- **Parallel execution**: `withTaskGroup` for independent sub-problems
+- **Gaussian elimination**: For linear systems and ILP constraint solving
 
 ---
 
