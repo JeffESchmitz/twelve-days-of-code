@@ -37,7 +37,7 @@
 | 9 | Movie Theater | Ray Casting + Polygon Containment | ⭐⭐ Medium |
 | 10 | Factory | Integer Linear Programming + Gaussian Elimination | ⭐⭐ Hard |
 | 11 | Reactor | DAG Path Counting + DP Decomposition + Memoization | ⭐⭐ Medium |
-| 12 | Christmas Tree Farm | Polyomino Packing + Exact Cover + Bitmask DLX | ⭐ Hard |
+| 12 | Christmas Tree Farm | Polyomino Packing + Exact Cover + Bitmask DLX | ⭐⭐ Hard |
 
 ---
 
