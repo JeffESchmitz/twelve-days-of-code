@@ -11,37 +11,32 @@ final class Day11: AdventOfCodeDay {
 
     /// Graph as adjacency list using integer indices for fast lookup
     private let adjacency: [[Int]]
-    /// Map from node name to index
-    private let nodeIndex: [String: Int]
     /// Special node indices
     private let youIdx, outIdx, svrIdx, dacIdx, fftIdx: Int
 
     init(input: String) {
-        var nameToIdx: [String: Int] = [:]
-        var edges: [(Int, Int)] = []
-
-        // First pass: assign indices to all nodes
-        for line in input.split(separator: "\n") {
+        // Parse lines into (source, [destinations]) pairs
+        let parsed = input.split(separator: "\n").compactMap { line -> (String, [String])? in
             let parts = line.split(separator: ":")
-            guard parts.count == 2 else { continue }
-            let src = String(parts[0].trimmingCharacters(in: .whitespaces))
-            if nameToIdx[src] == nil { nameToIdx[src] = nameToIdx.count }
-
-            for dest in parts[1].split(separator: " ") {
-                let d = String(dest.trimmingCharacters(in: .whitespaces))
-                if nameToIdx[d] == nil { nameToIdx[d] = nameToIdx.count }
-                edges.append((nameToIdx[src]!, nameToIdx[d]!))
-            }
+            guard parts.count == 2 else { return nil }
+            let src = String(parts[0]).trimmingCharacters(in: .whitespaces)
+            let dests = parts[1].split(separator: " ").map { String($0).trimmingCharacters(in: .whitespaces) }
+            return (src, dests)
         }
 
-        // Build adjacency list as array of arrays
-        var adj = [[Int]](repeating: [], count: nameToIdx.count)
-        for (src, dest) in edges {
-            adj[src].append(dest)
+        // Collect all unique node names and assign indices
+        let allNodes = parsed.flatMap { [$0.0] + $0.1 }
+        let nameToIdx = Dictionary(uniqueKeysWithValues:
+            Set(allNodes).enumerated().map { ($1, $0) }
+        )
+
+        // Build adjacency list using reduce
+        let adj = parsed.reduce(into: [[Int]](repeating: [], count: nameToIdx.count)) { adj, pair in
+            let srcIdx = nameToIdx[pair.0]!
+            adj[srcIdx] = pair.1.map { nameToIdx[$0]! }
         }
 
         self.adjacency = adj
-        self.nodeIndex = nameToIdx
         self.youIdx = nameToIdx["you"] ?? -1
         self.outIdx = nameToIdx["out"] ?? -1
         self.svrIdx = nameToIdx["svr"] ?? -1
@@ -56,13 +51,11 @@ final class Day11: AdventOfCodeDay {
     func part2() async -> Int {
         // Case A: svr → dac → fft → out
         // Case B: svr → fft → dac → out
-        let pathA = countPaths(from: svrIdx, to: dacIdx)
-                  * countPaths(from: dacIdx, to: fftIdx)
-                  * countPaths(from: fftIdx, to: outIdx)
+        let segmentsA = [(svrIdx, dacIdx), (dacIdx, fftIdx), (fftIdx, outIdx)]
+        let segmentsB = [(svrIdx, fftIdx), (fftIdx, dacIdx), (dacIdx, outIdx)]
 
-        let pathB = countPaths(from: svrIdx, to: fftIdx)
-                  * countPaths(from: fftIdx, to: dacIdx)
-                  * countPaths(from: dacIdx, to: outIdx)
+        let pathA = segmentsA.map { countPaths(from: $0.0, to: $0.1) }.reduce(1, *)
+        let pathB = segmentsB.map { countPaths(from: $0.0, to: $0.1) }.reduce(1, *)
 
         return pathA + pathB
     }
@@ -74,10 +67,7 @@ final class Day11: AdventOfCodeDay {
         func dfs(_ node: Int) -> Int {
             if node == end { return 1 }
             if memo[node] >= 0 { return memo[node] }
-            var count = 0
-            for neighbor in adjacency[node] {
-                count += dfs(neighbor)
-            }
+            let count = adjacency[node].reduce(0) { $0 + dfs($1) }
             memo[node] = count
             return count
         }
