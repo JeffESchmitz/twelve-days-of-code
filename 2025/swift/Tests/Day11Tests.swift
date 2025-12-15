@@ -57,6 +57,7 @@ struct Day11Tests {
     @Test("Day 11 Part 2 Solution")
     func testDay11_part2_solution() async {
         let day = Day11(input: Day11.input)
+        print("⏱️ Running Part 2 with full instrumentation...")
         let result = await day.part2()
         print("Day 11 Part 2 result: \(result)")
         #expect(result > 0)
