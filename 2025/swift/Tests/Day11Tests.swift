@@ -39,21 +39,19 @@ struct Day11Tests {
     @Test("Day 11 Part 1 Example", .tags(.testInput))
     func testDay11_part1() async {
         let day = Day11(input: testInput)
-        await #expect(day.part1() == 5)
+        #expect(await day.part1() == 5)
     }
 
     @Test("Day 11 Part 1 Solution")
     func testDay11_part1_solution() async {
         let day = Day11(input: Day11.input)
-        let result = await day.part1()
-        print("Day 11 Part 1 result: \(result)")
-        await #expect(result > 0)
+        #expect(await day.part1() == 764)
     }
 
     @Test("Day 11 Part 2 Example", .tags(.testInput))
     func testDay11_part2() async {
         let day = Day11(input: testInput2)
-        await #expect(day.part2() == 2)
+        #expect(await day.part2() == 2)
     }
 
     @Test("Day 11 Part 2 Solution")
@@ -61,6 +59,6 @@ struct Day11Tests {
         let day = Day11(input: Day11.input)
         let result = await day.part2()
         print("Day 11 Part 2 result: \(result)")
-        await #expect(result > 0)
+        #expect(result > 0)
     }
 }
