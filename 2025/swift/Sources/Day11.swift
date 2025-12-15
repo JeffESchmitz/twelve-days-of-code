@@ -8,66 +8,77 @@ import AoCTools
 
 final class Day11: AdventOfCodeDay {
     let title = "Reactor"
-    let graph: [String: [String]]
+
+    /// Graph as adjacency list using integer indices for fast lookup
+    private let adjacency: [[Int]]
+    /// Map from node name to index
+    private let nodeIndex: [String: Int]
+    /// Special node indices
+    private let youIdx, outIdx, svrIdx, dacIdx, fftIdx: Int
 
     init(input: String) {
-        var adjacencyList: [String: [String]] = [:]
+        var nameToIdx: [String: Int] = [:]
+        var edges: [(Int, Int)] = []
+
+        // First pass: assign indices to all nodes
         for line in input.split(separator: "\n") {
             let parts = line.split(separator: ":")
             guard parts.count == 2 else { continue }
-            let device = String(parts[0].trimmingCharacters(in: .whitespaces))
-            let outputs = parts[1].split(separator: " ").map { String($0.trimmingCharacters(in: .whitespaces)) }
-            adjacencyList[device] = outputs
+            let src = String(parts[0].trimmingCharacters(in: .whitespaces))
+            if nameToIdx[src] == nil { nameToIdx[src] = nameToIdx.count }
+
+            for dest in parts[1].split(separator: " ") {
+                let d = String(dest.trimmingCharacters(in: .whitespaces))
+                if nameToIdx[d] == nil { nameToIdx[d] = nameToIdx.count }
+                edges.append((nameToIdx[src]!, nameToIdx[d]!))
+            }
         }
-        self.graph = adjacencyList
+
+        // Build adjacency list as array of arrays
+        var adj = [[Int]](repeating: [], count: nameToIdx.count)
+        for (src, dest) in edges {
+            adj[src].append(dest)
+        }
+
+        self.adjacency = adj
+        self.nodeIndex = nameToIdx
+        self.youIdx = nameToIdx["you"] ?? -1
+        self.outIdx = nameToIdx["out"] ?? -1
+        self.svrIdx = nameToIdx["svr"] ?? -1
+        self.dacIdx = nameToIdx["dac"] ?? -1
+        self.fftIdx = nameToIdx["fft"] ?? -1
     }
 
     func part1() async -> Int {
-        // Part 1: Count all paths from "you" to "out"
-        return countPaths(from: "you", to: "out")
+        countPaths(from: youIdx, to: outIdx)
     }
 
     func part2() async -> Int {
-        // We need paths that visit BOTH dac AND fft (in any order)
-        //
-        // Case A: svr -> ... -> dac -> ... -> fft -> ... -> out
-        // Case B: svr -> ... -> fft -> ... -> dac -> ... -> out
-        //
-        // Total = (paths_svr→dac × paths_dac→fft × paths_fft→out)
-        //       + (paths_svr→fft × paths_fft→dac × paths_dac→out)
+        // Case A: svr → dac → fft → out
+        // Case B: svr → fft → dac → out
+        let pathA = countPaths(from: svrIdx, to: dacIdx)
+                  * countPaths(from: dacIdx, to: fftIdx)
+                  * countPaths(from: fftIdx, to: outIdx)
 
-        // Case A: svr -> dac -> fft -> out
-        let svrToDac = countPaths(from: "svr", to: "dac")
-        let dacToFft = countPaths(from: "dac", to: "fft")
-        let fftToOut = countPaths(from: "fft", to: "out")
-        let pathA = svrToDac * dacToFft * fftToOut
-
-        // Case B: svr -> fft -> dac -> out
-        let svrToFft = countPaths(from: "svr", to: "fft")
-        let fftToDac = countPaths(from: "fft", to: "dac")
-        let dacToOut = countPaths(from: "dac", to: "out")
-        let pathB = svrToFft * fftToDac * dacToOut
+        let pathB = countPaths(from: svrIdx, to: fftIdx)
+                  * countPaths(from: fftIdx, to: dacIdx)
+                  * countPaths(from: dacIdx, to: outIdx)
 
         return pathA + pathB
     }
 
-    /// Memoized DFS to count paths between two specific nodes in the DAG
-    /// Since the graph is a DAG (no cycles), we don't need visited tracking
-    private func countPaths(from start: String, to end: String) -> Int {
-        var memo: [String: Int] = [:]
+    /// Memoized DFS using integer indices for fast array lookup
+    private func countPaths(from start: Int, to end: Int) -> Int {
+        var memo = [Int](repeating: -1, count: adjacency.count)
 
-        func dfs(_ current: String) -> Int {
-            if current == end { return 1 }
-            if let cached = memo[current] { return cached }
-
-            guard let neighbors = graph[current] else { return 0 }
-
+        func dfs(_ node: Int) -> Int {
+            if node == end { return 1 }
+            if memo[node] >= 0 { return memo[node] }
             var count = 0
-            for neighbor in neighbors {
+            for neighbor in adjacency[node] {
                 count += dfs(neighbor)
             }
-
-            memo[current] = count
+            memo[node] = count
             return count
         }
 
