@@ -1,53 +1,31 @@
-# NOTE: 2025 Swift disabled - waiting for GitHub Actions to support Xcode 16.2+ / Swift 6.2
-# 2025 dependencies (AoCTools 0.1.9+) require Swift 6.2, which needs Xcode 16.2+
-# GitHub Actions currently only supports up to Xcode 16.1
-
 name: Swift
 
 on:
   push:
-    branches: [ "main" ]
-    paths:
-      - '*/swift/**'
-      - '.github/workflows/swift.yml'
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
-    paths:
-      - '*/swift/**'
-      - '.github/workflows/swift.yml'
+  workflow_dispatch:
 
-env:
-  DEVELOPER_DIR: /Applications/Xcode_16.1.app/Contents/Developer
+permissions:
+  contents: read
 
 jobs:
-  build:
+  sample-tests:
     runs-on: macos-15
-    strategy:
-      matrix:
-        # 2024 temporarily disabled while working on 2025
-        # 2025 disabled until Xcode 16.2+ available on GitHub Actions
-        year: []
-        # year: ["2024", "2025"]
-
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.0.1.app/Contents/Developer
     steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/cache@v4
-      with:
-        path: ${{ matrix.year }}/swift/.build
-        key: ${{ runner.os }}-${{ matrix.year }}-spm-${{ hashFiles(format('{0}/swift/**/Package.resolved', matrix.year)) }}
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.year }}-spm-
-
-    - name: Build
-      working-directory: ${{ matrix.year }}/swift
-      run: swift build
-
-    - name: Test
-      working-directory: ${{ matrix.year }}/swift
-      run: |
-        if [ "${{ matrix.year }}" == "2024" ]; then
-          swift test --filter "AoCTests.Day.*Tests/testDay.*_part[12]\(\)"
-        else
-          swift test --filter "TDOCTests.Day.*Tests/testDay.*_part[12]\(\)"
-        fi
+      - uses: actions/checkout@v4
+      - name: Show Swift version
+        run: swift --version
+      - name: Build with resolved dependencies
+        run: swift build --force-resolved-versions
+      - name: Run public sample tests
+        shell: bash
+        run: |
+          set -o pipefail
+          swift test --force-resolved-versions --skip '_solution' | tee "$RUNNER_TEMP/swift-samples.log"
+          grep -E 'Test run with 23 tests in 12 suites passed' "$RUNNER_TEMP/swift-samples.log"
+      - name: Check lockfile
+        run: git diff --exit-code -- Package.resolved
