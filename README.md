@@ -1,125 +1,56 @@
-# 🎄 Twelve Days of Code
+# Twelve Days of Code 2025
 
-> *A multi-year, multi-language journey through festive coding challenges — learning, solving, and celebrating the art of problem-solving.*
+My TDOC 2025 Solutions in Swift
 
----
+### Overview
 
-## 🎁 What's Inside
+All code for all days is compiled into a single macOS commandline binary, which can be run either from within Xcode or from Terminal.
 
-This repository contains solutions for **Twelve Days of Code** (formerly Advent of Code), organized by year and language. Each solution is crafted not just to solve puzzles, but to **learn deeply** — understanding patterns, algorithms, and the "why" behind every approach.
+Each day usually has 3 associated source files:
 
-```
-📂 2024/
-   ├── 🦅 swift/     23/25 days complete (46⭐)
-   └── 🐍 python/    Day 1 ported (learning track)
-📂 2025/
-   └── 🦅 swift/     12/12 days complete (24⭐) — Complete! 🎉
-```
+* `DayX.swift` for the solution code
+* `DayX+Input.swift` for the puzzle input. This file is created by running the `input.sh` script (see below) but is not included in this repo for [legal reasons](https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs).
+* `DayXTests.swift` for the test suite, if the puzzle has test cases
 
-### Languages & Progress
-- **Swift**: Primary language — full solutions with detailed learnings
-- **Python**: Secondary track — porting select days to learn Python idioms
-- **Future**: Kotlin and additional languages planned
+`TDOC.swift` has the `main()` function which runs one (or all) of the puzzles, then prints the solution(s) and the elapsed time.
 
----
+The code relies on my own [AoCTools](https://codeberg.org/gereon/AoCTools) package where I started collecting utility functions for things frequently used in AoC, such as 2D and 3D points, [hexagonal grids](https://www.redblobgames.com/grids/hexagons/), an [A\* pathfinder](https://en.wikipedia.org/wiki/A*_search_algorithm) and more.
 
-## 🚀 Quick Start
+### Xcode
 
-### Swift (2024)
-```bash
-cd 2024/swift
-swift test          # run all tests
-./run 22            # run a single day
-./run all           # run everything
-```
+Open the project via the `Package.swift` file (`xed .` from Terminal in the project directory). `Cmd-R` will either run the puzzle for the current calendar day during December, or for all days in other months. To override this, change `defaultDay` in `TDOC.swift`.
 
-### Python (2024)
-```bash
-cd 2024/python
-./test 1            # test day 1
-./run 1             # run day 1 solution
-```
+`Cmd-U` runs the test suite for all 12 days. Run individual tests by clicking on them in the Test Inspector (`Cmd-6`)
 
-### Swift (2025)
-```bash
-cd 2025/swift
-swift test          # run all tests
-./test.sh 1         # test day 1
-./run.sh 1          # run day 1 solution
-```
+### Commandline
 
-See language-specific READMEs for setup details and additional commands.
+From the commandline, use `swift run` or `swift run -c release`.
 
----
+To run the puzzle for a specific day without changing `TDOC.swift`, use `swift run TwelveDaysOfCode X` to run day `X`. `X` can be a number from 1 to 12 or `all`.
 
-## 🧠 Learning Approach
+To run tests, use `swift test` for all tests, or e.g. `swift test --filter TDOCTests.Day02Tests` to run the tests for day 2.
 
-This isn't just about getting stars ⭐ — it's about **mastering problem-solving patterns**.
+### Puzzle Inputs
 
-With the help of **Claude Code** and specialized AI agents:
-- 🤖 **Agent Architecture**: Purpose-built agents (Explore, Plan, Task) systematically break down problems, search codebases, and plan implementations
-- 🔍 **Deep Understanding**: Break down each problem into fundamental components
-- 📊 **Pattern Recognition**: Identify when to use BFS, binary search, memoization, etc.
-- ⚡ **Performance Analysis**: Understand time/space complexity and optimization opportunities
-- 📝 **Documentation**: Capture insights for future reference
+Use the included `input.sh` script to download your puzzle input. To be able to run this script, [grab the session cookie](https://www.reddit.com/r/adventofcode/comments/a2vonl/how_to_download_inputs_with_a_script/) from [adventofcode.com](https://adventofcode.com) and create a `.aoc-session` file with the contents. `input.sh` downloads the input for the current day by default, use `input.sh X` to download day X's input.
 
-Each day includes:
-- Clean, tested solutions
-- Algorithm pattern identification
-- Performance notes and trade-offs
-- Detailed learnings documentation (see `2024/swift/AoC-2024-Learnings.md`)
+## 2025 Progress
 
----
+| Day | Title | Stars | Key Technique |
+|-----|-------|:-----:|---------------|
+| [1](Sources/Day01.swift) | Secret Entrance | ⭐⭐ | Simulation + Modular Arithmetic |
+| [2](Sources/Day02.swift) | Gift Shop | ⭐⭐ | Arithmetic Pattern Detection |
+| [3](Sources/Day03.swift) | Lobby | ⭐⭐ | Suffix Maximum + Monotonic Stack |
+| [4](Sources/Day04.swift) | Printing Department | ⭐⭐ | Neighbor-Counting Grid + Simulation |
+| [5](Sources/Day05.swift) | Cafeteria | ⭐⭐ | PointFree Parsing + Interval Merging |
+| [6](Sources/Day06.swift) | Trash Compactor | ⭐⭐ | Column-Based Grid Parsing |
+| [7](Sources/Day07.swift) | Laboratories | ⭐⭐ | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups |
+| 8 | | | |
+| 9 | | | |
+| 10 | | | |
+| 11 | | | |
+| 12 | | | |
 
-## 🎯 Core Patterns We've Mastered
+**Total: 14/24 stars** ⭐
 
-**Algorithm Selection**
-- Shortest path problems → **BFS/Dijkstra**
-- "First X that..." → **Binary search**
-- "Count all ways" → **Dynamic programming + memoization**
-- Grid traversal → **BFS/DFS/Flood fill**
-- Connectivity/grouping → **Union-Find (Disjoint Set Union)** *(2025)*
-- Point-in-polygon → **Ray Casting** *(2025)*
-- DAG path counting → **DP decomposition (count, don't enumerate)** *(2025)*
-- Bin packing / exact cover → **Bitmask DLX with backtracking** *(2025)*
-
-**Data Structure Wisdom**
-- `Set.contains()` O(1) vs `Array.contains()` O(n) = **1000x difference**
-- `Deque.popFirst()` O(1) vs `Array.removeFirst()` O(n)
-- Dictionary-based memoization for scaling to massive inputs
-- **Bitmask grids** `[UInt64]` for O(1) collision detection *(2025)*
-- **Set vs Dict** for merge vs accumulate semantics *(2025)*
-- **Pre-parsed lookups** - convert O(n) string ops to O(1) Set lookups *(2025)*
-
-**Three-Phase Architecture**
-1. **Precompute**: Do expensive work once
-2. **Optimize**: Select the best approach
-3. **Scale**: Use caching/memoization for massive inputs
-
-**Advanced Techniques** *(2025)*
-- **Iterative backtracking**: Explicit stack to avoid stack overflow in deep recursion
-- **Parallel execution**: `withTaskGroup` for independent sub-problems
-- **Gaussian elimination**: For linear systems and ILP constraint solving
-
----
-
-## 📚 Learning Resources
-
-### 2024 Archive
-- **[2024 Swift Deep Dive](2024/swift/README.md)**: The journey, breakthroughs, and "aha!" moments
-- **[8-Step Problem Framework](2024/swift/AoC-2024-Learnings.md)**: Systematic approach to solving any problem
-- **Day-Specific Learnings**: See `2024/swift/Sources/DayXX/*-learnings.md` for individual deep dives
-
-### 2025 Complete
-- **[2025 Learning Tracker](2025/swift/TwelveDaysOfCode-2025-Learnings.md)**: Comprehensive guide with patterns, frameworks, and all 12 day deep dives
-- **Day-Specific Learnings**: See `2025/swift/Sources/DayXX-learnings.md` for detailed walkthroughs
-
----
-
-## 🎅 Contributing
-
-This is a personal learning repository, but feel free to explore, learn from, or fork for your own journey!
-
----
-
-*Built with Swift, Python, and the power of AI-assisted learning. Not just solving puzzles — building mastery.*
+<!--- advent_readme_stars table --->

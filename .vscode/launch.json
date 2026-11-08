@@ -3,42 +3,22 @@
         {
             "type": "swift",
             "request": "launch",
+            "name": "Debug TwelveDaysOfCode",
             "args": [],
-            "cwd": "${workspaceFolder:twelve-days-of-code}/2024/swift",
-            "name": "Debug AdventOfCode (2024/swift)",
-            "target": "AdventOfCode",
-            "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug AdventOfCode (2024/swift)"
-        },
-        {
-            "type": "swift",
-            "request": "launch",
-            "args": [],
-            "cwd": "${workspaceFolder:twelve-days-of-code}/2024/swift",
-            "name": "Release AdventOfCode (2024/swift)",
-            "target": "AdventOfCode",
-            "configuration": "release",
-            "preLaunchTask": "swift: Build Release AdventOfCode (2024/swift)"
-        },
-        {
-            "type": "swift",
-            "request": "launch",
-            "args": [],
-            "cwd": "${workspaceFolder:twelve-days-of-code}/2025/swift",
-            "name": "Debug TwelveDaysOfCode (2025/swift)",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "swift: Build Debug TwelveDaysOfCode",
             "target": "TwelveDaysOfCode",
-            "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug TwelveDaysOfCode (2025/swift)"
+            "configuration": "debug"
         },
         {
             "type": "swift",
             "request": "launch",
+            "name": "Release TwelveDaysOfCode",
             "args": [],
-            "cwd": "${workspaceFolder:twelve-days-of-code}/2025/swift",
-            "name": "Release TwelveDaysOfCode (2025/swift)",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "swift: Build Release TwelveDaysOfCode",
             "target": "TwelveDaysOfCode",
-            "configuration": "release",
-            "preLaunchTask": "swift: Build Release TwelveDaysOfCode (2025/swift)"
+            "configuration": "release"
         }
     ]
 }
