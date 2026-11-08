@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Allow overriding year via AOC_YEAR, default to current calendar year.
-YR=${AOC_YEAR:-$(date +%Y)}
+# Allow overriding the default puzzle year via AOC_YEAR.
+YR=${AOC_YEAR:-2025}
 DAY=$1
 
 if [ -z "$DAY" ]; then

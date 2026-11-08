@@ -1,56 +1,43 @@
-# Twelve Days of Code 2025
+# Advent of Code 2025
 
-My TDOC 2025 Solutions in Swift
+Swift solutions for all **12 days and 24 stars** of Advent of Code 2025, with notes on the algorithms and patterns learned along the way. This repository was formerly the multi-year Twelve Days of Code project; its earlier history remains in Git. The 2024 solutions are available in [AoC2024](https://github.com/JeffESchmitz/AoC2024).
 
-### Overview
+## Getting started
 
-All code for all days is compiled into a single macOS commandline binary, which can be run either from within Xcode or from Terminal.
+From the repository root, use a Swift 6.2 or newer toolchain:
 
-Each day usually has 3 associated source files:
+```sh
+swift build --force-resolved-versions
+swift test --force-resolved-versions --skip '_solution'  # public examples
+swift run TwelveDaysOfCode 1                             # one day
+./run.sh all                                            # all days, release build
+```
 
-* `DayX.swift` for the solution code
-* `DayX+Input.swift` for the puzzle input. This file is created by running the `input.sh` script (see below) but is not included in this repo for [legal reasons](https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs).
-* `DayXTests.swift` for the test suite, if the puzzle has test cases
+The package builds the `TwelveDaysOfCode` executable and the `TDOCTests` test target. The public sample suite has 23 tests. Unfiltered `swift test` and `./test.sh` include solution tests that require personal puzzle inputs; they can fail or crash without those inputs. `./run.sh` with no arguments displays a message about all days but actually selects Day 1; pass `all` explicitly to run every day. Solutions also need personal inputs to produce meaningful results.
 
-`TDOC.swift` has the `main()` function which runs one (or all) of the puzzles, then prints the solution(s) and the elapsed time.
+For input, put your session cookie in a private `.aoc-session` file, then run `./input.sh 1` to create `Sources/Day01+Input.swift`. The script defaults to 2025; set `AOC_YEAR` to override it. Session files and personal inputs are ignored by Git. `new_day.sh` is a historical generator that can overwrite existing files and defaults to the current year; it is not needed for setup.
 
-The code relies on my own [AoCTools](https://codeberg.org/gereon/AoCTools) package where I started collecting utility functions for things frequently used in AoC, such as 2D and 3D points, [hexagonal grids](https://www.redblobgames.com/grids/hexagons/), an [A\* pathfinder](https://en.wikipedia.org/wiki/A*_search_algorithm) and more.
+Open `Package.swift` in Xcode with `xed .` or use the root VS Code launch configurations. See [QUICKSTART.md](QUICKSTART.md) and [CHECKLIST.md](CHECKLIST.md) for commands and setup checks.
 
-### Xcode
+## Progress and learning
 
-Open the project via the `Package.swift` file (`xed .` from Terminal in the project directory). `Cmd-R` will either run the puzzle for the current calendar day during December, or for all days in other months. To override this, change `defaultDay` in `TDOC.swift`.
+| Day | Puzzle | Notes |
+| --- | --- | --- |
+| [1](Sources/Day01.swift) | Secret Entrance | [Learnings](Sources/Day01-learnings.md) |
+| [2](Sources/Day02.swift) | Gift Shop | [Learnings](Sources/Day02-learnings.md) |
+| [3](Sources/Day03.swift) | Lobby | [Learnings](Sources/Day03-learnings.md) |
+| [4](Sources/Day04.swift) | Printing Department | [Learnings](Sources/Day04-learnings.md) |
+| [5](Sources/Day05.swift) | Cafeteria | [Learnings](Sources/Day05-learnings.md) |
+| [6](Sources/Day06.swift) | Trash Compactor | [Learnings](Sources/Day06-learnings.md) |
+| [7](Sources/Day07.swift) | Laboratories | [Learnings](Sources/Day07-learnings.md) |
+| [8](Sources/Day08.swift) | Playground | [Learnings](Sources/Day08-learnings.md) |
+| [9](Sources/Day09.swift) | Movie Theater | [Learnings](Sources/Day09-learnings.md) |
+| [10](Sources/Day10.swift) | Factory | [Learnings](Sources/Day10-learnings.md) |
+| [11](Sources/Day11.swift) | Reactor | [Learnings](Sources/Day11-learnings.md) |
+| [12](Sources/Day12.swift) | Christmas Tree Farm | [Learning tracker](TwelveDaysOfCode-2025-Learnings.md) |
 
-`Cmd-U` runs the test suite for all 12 days. Run individual tests by clicking on them in the Test Inspector (`Cmd-6`)
+The [2025 learning tracker](TwelveDaysOfCode-2025-Learnings.md) collects patterns and the broader journey. Additional shared resources include the [AoCTools cheatsheet](AoCTools-Cheatsheet.md), [puzzle teacher](AOC-PUZZLE-TEACHER.md), [agent quick start](AOC-AGENT-QUICK-START.md), [agent prompts](AOC-AGENT-PROMPTS.md), [agent stack](AOC-AGENT-STACK.md), [agent system guide](AOC-AGENT-SYSTEM-README.md), and [system map](AGENT-SYSTEM-MAP.md).
 
-### Commandline
+## Credits and license
 
-From the commandline, use `swift run` or `swift run -c release`.
-
-To run the puzzle for a specific day without changing `TDOC.swift`, use `swift run TwelveDaysOfCode X` to run day `X`. `X` can be a number from 1 to 12 or `all`.
-
-To run tests, use `swift test` for all tests, or e.g. `swift test --filter TDOCTests.Day02Tests` to run the tests for day 2.
-
-### Puzzle Inputs
-
-Use the included `input.sh` script to download your puzzle input. To be able to run this script, [grab the session cookie](https://www.reddit.com/r/adventofcode/comments/a2vonl/how_to_download_inputs_with_a_script/) from [adventofcode.com](https://adventofcode.com) and create a `.aoc-session` file with the contents. `input.sh` downloads the input for the current day by default, use `input.sh X` to download day X's input.
-
-## 2025 Progress
-
-| Day | Title | Stars | Key Technique |
-|-----|-------|:-----:|---------------|
-| [1](Sources/Day01.swift) | Secret Entrance | ⭐⭐ | Simulation + Modular Arithmetic |
-| [2](Sources/Day02.swift) | Gift Shop | ⭐⭐ | Arithmetic Pattern Detection |
-| [3](Sources/Day03.swift) | Lobby | ⭐⭐ | Suffix Maximum + Monotonic Stack |
-| [4](Sources/Day04.swift) | Printing Department | ⭐⭐ | Neighbor-Counting Grid + Simulation |
-| [5](Sources/Day05.swift) | Cafeteria | ⭐⭐ | PointFree Parsing + Interval Merging |
-| [6](Sources/Day06.swift) | Trash Compactor | ⭐⭐ | Column-Based Grid Parsing |
-| [7](Sources/Day07.swift) | Laboratories | ⭐⭐ | Set vs Dict (merge vs accumulate) + Pre-parsed O(1) lookups |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
-| 11 | | | |
-| 12 | | | |
-
-**Total: 14/24 stars** ⭐
-
-<!--- advent_readme_stars table --->
+The project uses [AoCTools](https://github.com/gereons/AoCTools) by Gereon Steffens. The original template and license credit Gereon Steffens; see [LICENSE.md](LICENSE.md) for the license text.
