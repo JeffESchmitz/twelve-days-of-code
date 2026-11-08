@@ -1,125 +1,43 @@
-# 🎄 Twelve Days of Code
+# Advent of Code 2025
 
-> *A multi-year, multi-language journey through festive coding challenges — learning, solving, and celebrating the art of problem-solving.*
+Swift solutions for all **12 days and 24 stars** of Advent of Code 2025, with notes on the algorithms and patterns learned along the way. This repository was formerly the multi-year Twelve Days of Code project; its earlier history remains in Git. The 2024 solutions are available in [AoC2024](https://github.com/JeffESchmitz/AoC2024).
 
----
+## Getting started
 
-## 🎁 What's Inside
+From the repository root, use a Swift 6.2 or newer toolchain:
 
-This repository contains solutions for **Twelve Days of Code** (formerly Advent of Code), organized by year and language. Each solution is crafted not just to solve puzzles, but to **learn deeply** — understanding patterns, algorithms, and the "why" behind every approach.
-
-```
-📂 2024/
-   ├── 🦅 swift/     23/25 days complete (46⭐)
-   └── 🐍 python/    Day 1 ported (learning track)
-📂 2025/
-   └── 🦅 swift/     12/12 days complete (24⭐) — Complete! 🎉
+```sh
+swift build --force-resolved-versions
+swift test --force-resolved-versions --skip '_solution'  # public examples
+swift run TwelveDaysOfCode 1                             # one day
+./run.sh all                                            # all days, release build
 ```
 
-### Languages & Progress
-- **Swift**: Primary language — full solutions with detailed learnings
-- **Python**: Secondary track — porting select days to learn Python idioms
-- **Future**: Kotlin and additional languages planned
+The package builds the `TwelveDaysOfCode` executable and the `TDOCTests` test target. The public sample suite has 23 tests. Unfiltered `swift test` and `./test.sh` include solution tests that require personal puzzle inputs; they can fail or crash without those inputs. `./run.sh` with no arguments displays a message about all days but actually selects Day 1; pass `all` explicitly to run every day. Solutions also need personal inputs to produce meaningful results.
 
----
+For input, put your session cookie in a private `.aoc-session` file, then run `./input.sh 1` to create `Sources/Day01+Input.swift`. The script defaults to 2025; set `AOC_YEAR` to override it. Session files and personal inputs are ignored by Git. `new_day.sh` is a historical generator that can overwrite existing files and defaults to the current year; it is not needed for setup.
 
-## 🚀 Quick Start
+Open `Package.swift` in Xcode with `xed .` or use the root VS Code launch configurations. See [QUICKSTART.md](QUICKSTART.md) and [CHECKLIST.md](CHECKLIST.md) for commands and setup checks.
 
-### Swift (2024)
-```bash
-cd 2024/swift
-swift test          # run all tests
-./run 22            # run a single day
-./run all           # run everything
-```
+## Progress and learning
 
-### Python (2024)
-```bash
-cd 2024/python
-./test 1            # test day 1
-./run 1             # run day 1 solution
-```
+| Day | Puzzle | Notes |
+| --- | --- | --- |
+| [1](Sources/Day01.swift) | Secret Entrance | [Learnings](Sources/Day01-learnings.md) |
+| [2](Sources/Day02.swift) | Gift Shop | [Learnings](Sources/Day02-learnings.md) |
+| [3](Sources/Day03.swift) | Lobby | [Learnings](Sources/Day03-learnings.md) |
+| [4](Sources/Day04.swift) | Printing Department | [Learnings](Sources/Day04-learnings.md) |
+| [5](Sources/Day05.swift) | Cafeteria | [Learnings](Sources/Day05-learnings.md) |
+| [6](Sources/Day06.swift) | Trash Compactor | [Learnings](Sources/Day06-learnings.md) |
+| [7](Sources/Day07.swift) | Laboratories | [Learnings](Sources/Day07-learnings.md) |
+| [8](Sources/Day08.swift) | Playground | [Learnings](Sources/Day08-learnings.md) |
+| [9](Sources/Day09.swift) | Movie Theater | [Learnings](Sources/Day09-learnings.md) |
+| [10](Sources/Day10.swift) | Factory | [Learnings](Sources/Day10-learnings.md) |
+| [11](Sources/Day11.swift) | Reactor | [Learnings](Sources/Day11-learnings.md) |
+| [12](Sources/Day12.swift) | Christmas Tree Farm | [Learning tracker](TwelveDaysOfCode-2025-Learnings.md) |
 
-### Swift (2025)
-```bash
-cd 2025/swift
-swift test          # run all tests
-./test.sh 1         # test day 1
-./run.sh 1          # run day 1 solution
-```
+The [2025 learning tracker](TwelveDaysOfCode-2025-Learnings.md) collects patterns and the broader journey. Additional shared resources include the [AoCTools cheatsheet](AoCTools-Cheatsheet.md), [puzzle teacher](AOC-PUZZLE-TEACHER.md), [agent quick start](AOC-AGENT-QUICK-START.md), [agent prompts](AOC-AGENT-PROMPTS.md), [agent stack](AOC-AGENT-STACK.md), [agent system guide](AOC-AGENT-SYSTEM-README.md), and [system map](AGENT-SYSTEM-MAP.md).
 
-See language-specific READMEs for setup details and additional commands.
+## Credits and license
 
----
-
-## 🧠 Learning Approach
-
-This isn't just about getting stars ⭐ — it's about **mastering problem-solving patterns**.
-
-With the help of **Claude Code** and specialized AI agents:
-- 🤖 **Agent Architecture**: Purpose-built agents (Explore, Plan, Task) systematically break down problems, search codebases, and plan implementations
-- 🔍 **Deep Understanding**: Break down each problem into fundamental components
-- 📊 **Pattern Recognition**: Identify when to use BFS, binary search, memoization, etc.
-- ⚡ **Performance Analysis**: Understand time/space complexity and optimization opportunities
-- 📝 **Documentation**: Capture insights for future reference
-
-Each day includes:
-- Clean, tested solutions
-- Algorithm pattern identification
-- Performance notes and trade-offs
-- Detailed learnings documentation (see `2024/swift/AoC-2024-Learnings.md`)
-
----
-
-## 🎯 Core Patterns We've Mastered
-
-**Algorithm Selection**
-- Shortest path problems → **BFS/Dijkstra**
-- "First X that..." → **Binary search**
-- "Count all ways" → **Dynamic programming + memoization**
-- Grid traversal → **BFS/DFS/Flood fill**
-- Connectivity/grouping → **Union-Find (Disjoint Set Union)** *(2025)*
-- Point-in-polygon → **Ray Casting** *(2025)*
-- DAG path counting → **DP decomposition (count, don't enumerate)** *(2025)*
-- Bin packing / exact cover → **Bitmask DLX with backtracking** *(2025)*
-
-**Data Structure Wisdom**
-- `Set.contains()` O(1) vs `Array.contains()` O(n) = **1000x difference**
-- `Deque.popFirst()` O(1) vs `Array.removeFirst()` O(n)
-- Dictionary-based memoization for scaling to massive inputs
-- **Bitmask grids** `[UInt64]` for O(1) collision detection *(2025)*
-- **Set vs Dict** for merge vs accumulate semantics *(2025)*
-- **Pre-parsed lookups** - convert O(n) string ops to O(1) Set lookups *(2025)*
-
-**Three-Phase Architecture**
-1. **Precompute**: Do expensive work once
-2. **Optimize**: Select the best approach
-3. **Scale**: Use caching/memoization for massive inputs
-
-**Advanced Techniques** *(2025)*
-- **Iterative backtracking**: Explicit stack to avoid stack overflow in deep recursion
-- **Parallel execution**: `withTaskGroup` for independent sub-problems
-- **Gaussian elimination**: For linear systems and ILP constraint solving
-
----
-
-## 📚 Learning Resources
-
-### 2024 Archive
-- **[2024 Swift Deep Dive](2024/swift/README.md)**: The journey, breakthroughs, and "aha!" moments
-- **[8-Step Problem Framework](2024/swift/AoC-2024-Learnings.md)**: Systematic approach to solving any problem
-- **Day-Specific Learnings**: See `2024/swift/Sources/DayXX/*-learnings.md` for individual deep dives
-
-### 2025 Complete
-- **[2025 Learning Tracker](2025/swift/TwelveDaysOfCode-2025-Learnings.md)**: Comprehensive guide with patterns, frameworks, and all 12 day deep dives
-- **Day-Specific Learnings**: See `2025/swift/Sources/DayXX-learnings.md` for detailed walkthroughs
-
----
-
-## 🎅 Contributing
-
-This is a personal learning repository, but feel free to explore, learn from, or fork for your own journey!
-
----
-
-*Built with Swift, Python, and the power of AI-assisted learning. Not just solving puzzles — building mastery.*
+The project uses [AoCTools](https://github.com/gereons/AoCTools) by Gereon Steffens. The original template and license credit Gereon Steffens; see [LICENSE.md](LICENSE.md) for the license text.
